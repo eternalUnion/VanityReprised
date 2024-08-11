@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AssetRipper.Import.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace AssetRipper.GUI.Web.Pages;
@@ -42,6 +43,9 @@ public static class Commands
 		{
 			IFormCollection form = await request.ReadFormAsync();
 
+			GameFileLoader.Settings.ImportSettings.EnableCampaignSceneExport = form.ContainsKey(nameof(ImportSettings.EnableCampaignSceneExport));
+			GameFileLoader.Settings.ImportSettings.EnableSpecialSceneExport = form.ContainsKey(nameof(ImportSettings.EnableSpecialSceneExport));
+			
 			string? path;
 			if (form.TryGetValue("Path", out StringValues values))
 			{
@@ -79,7 +83,7 @@ public static class Commands
 			{
 				return CommandsPath;
 			}
-
+			
 			if (!string.IsNullOrEmpty(path))
 			{
 				GameFileLoader.ExportUnityProject(path);

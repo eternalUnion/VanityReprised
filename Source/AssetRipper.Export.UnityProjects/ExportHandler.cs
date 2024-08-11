@@ -30,6 +30,39 @@ public class ExportHandler
 
 	public GameData Load(IReadOnlyList<string> paths)
 	{
+		Settings.ImportSettings = new ImportSettings()
+		{
+			IgnoreStreamingAssets = true,// false,
+			ScriptContentLevel = ScriptContentLevel.Level1,
+
+			// Preserve custom settings
+			EnableCampaignSceneExport = Settings.ImportSettings.EnableCampaignSceneExport,
+			EnableSpecialSceneExport = Settings.ImportSettings.EnableSpecialSceneExport,
+		};
+
+		Settings.ExportSettings = new ExportSettings()
+		{
+			AudioExportFormat = AudioExportFormat.Default,
+			ImageExportFormat = Modules.Textures.ImageExportFormat.Png,
+			LightmapTextureExportFormat = LightmapTextureExportFormat.Image,
+			SaveSettingsToDisk = true,
+			ScriptExportMode = ScriptExportMode.Decompiled,
+			ScriptLanguageVersion = ScriptLanguageVersion.AutoSafe,
+			ShaderExportMode = ShaderExportMode.Decompile,
+			SpriteExportMode = SpriteExportMode.Native,
+			TextExportMode = TextExportMode.Parse,
+		};
+
+		Settings.ProcessingSettings = new Processing.Configuration.ProcessingSettings()
+		{
+			BundledAssetsExportMode = Processing.Configuration.BundledAssetsExportMode.DirectExport,
+			EnableAssetDeduplication = true,
+			EnablePrefabOutlining = false,
+			EnableStaticMeshSeparation = true,
+		};
+
+		Settings.SaveToDefaultPath();
+
 		if (paths.Count == 1)
 		{
 			Logger.Info(LogCategory.Import, $"Attempting to read files from {paths[0]}");

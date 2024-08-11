@@ -8,7 +8,7 @@ public sealed record class ImportSettings
 	/// <summary>
 	/// The level of scripts to export
 	/// </summary>
-	public ScriptContentLevel ScriptContentLevel { get; set; } = ScriptContentLevel.Level2;
+	public ScriptContentLevel ScriptContentLevel { get; set; } = ScriptContentLevel.Level1;
 
 	/// <summary>
 	/// Including the streaming assets directory can cause some games to fail while exporting.
@@ -22,6 +22,9 @@ public sealed record class ImportSettings
 			StreamingAssetsMode = value ? StreamingAssetsMode.Ignore : StreamingAssetsMode.Extract;
 		}
 	}
+
+	public bool EnableCampaignSceneExport { get; set; } = false;
+	public bool EnableSpecialSceneExport { get; set; } = false;
 
 	/// <summary>
 	/// How the StreamingAssets folder is handled

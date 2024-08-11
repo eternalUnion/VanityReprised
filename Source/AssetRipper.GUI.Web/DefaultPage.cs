@@ -43,7 +43,7 @@ public abstract class DefaultPage : HtmlPage
 
 	private static void WriteHeader(TextWriter writer)
 	{
-		using (new Header(writer).End())
+		/*using (new Header(writer).End())
 		{
 			using (new Div(writer).WithClass("btn-group").End())
 			{
@@ -52,7 +52,7 @@ public abstract class DefaultPage : HtmlPage
 				WriteExportMenu(writer);
 				WriteLanguageMenu(writer);
 			}
-		}
+		}*/
 	}
 
 	private static void WriteFileMenu(TextWriter writer)
@@ -196,6 +196,8 @@ public abstract class DefaultPage : HtmlPage
 				new A(writer).WithHref("/Privacy").Close(Localization.Privacy);
 				writer.Write(" - ");
 				new A(writer).WithHref("/Licenses").Close(Localization.Licenses);
+				writer.Write(" - ");
+				new A(writer).WithHref("https://github.com/AssetRipper/AssetRipper").Close("Original Github");
 			}
 		}
 	}

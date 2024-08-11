@@ -52,7 +52,16 @@ public static class GameFileLoader
 	{
 		if (IsLoaded)
 		{
-			Directory.Delete(path, true);
+			// Change behavior, create folder inside the selected folder instead of deleting the selected folder
+			string originalName = "Spite";
+			string folderName = originalName;
+			int i = 0;
+			while (Directory.Exists(Path.Combine(path, folderName)))
+			{
+				folderName = $"{originalName}_{i++}";
+			}
+			path = Path.Combine(path, folderName);
+
 			Directory.CreateDirectory(path);
 			ExportHandler.Export(GameData, path);
 		}

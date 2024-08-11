@@ -18,12 +18,12 @@ public sealed record class ExportSettings
 	/// <summary>
 	/// The file format that images (like textures) get exported in.
 	/// </summary>
-	public LightmapTextureExportFormat LightmapTextureExportFormat { get; set; } = LightmapTextureExportFormat.Yaml;
+	public LightmapTextureExportFormat LightmapTextureExportFormat { get; set; } = LightmapTextureExportFormat.Image;
 
 	/// <summary>
 	/// How are MonoScripts exported? Recommended: Decompiled
 	/// </summary>
-	public ScriptExportMode ScriptExportMode { get; set; } = ScriptExportMode.Hybrid;
+	public ScriptExportMode ScriptExportMode { get; set; } = ScriptExportMode.Decompiled;
 
 	/// <summary>
 	/// The C# language version of decompiled scripts.
@@ -33,12 +33,12 @@ public sealed record class ExportSettings
 	/// <summary>
 	/// How to export shaders?
 	/// </summary>
-	public ShaderExportMode ShaderExportMode { get; set; } = ShaderExportMode.Dummy;
+	public ShaderExportMode ShaderExportMode { get; set; } = ShaderExportMode.Decompile;
 
 	/// <summary>
 	/// Should sprites be exported as a texture? Recommended: Native
 	/// </summary>
-	public SpriteExportMode SpriteExportMode { get; set; } = SpriteExportMode.Yaml;
+	public SpriteExportMode SpriteExportMode { get; set; } = SpriteExportMode.Native;
 
 	/// <summary>
 	/// How are text assets exported?

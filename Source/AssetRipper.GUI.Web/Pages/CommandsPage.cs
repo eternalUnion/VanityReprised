@@ -1,4 +1,5 @@
 ﻿using AssetRipper.GUI.Web.Paths;
+using AssetRipper.Processing.Configuration;
 
 namespace AssetRipper.GUI.Web.Pages;
 
@@ -19,14 +20,17 @@ public sealed class CommandsPage : VuePage
 					new Input(writer).WithClass("form-control").WithType("text").WithName("Path")
 						.WithCustomAttribute("v-model", "load_path")
 						.WithCustomAttribute("@input", "handleLoadPathChange").Close();
-					new Input(writer).WithCustomAttribute("v-if", "load_path_exists").WithType("submit").WithClass("btn btn-primary").WithValue(Localization.MenuLoad).Close();
-					new Button(writer).WithCustomAttribute("v-else").WithClass("btn btn-primary").WithCustomAttribute("disabled").Close(Localization.MenuLoad);
-				}
 
-				if (Dialogs.Supported)
-				{
-					new Button(writer).WithCustomAttribute("@click", "handleSelectLoadFile").WithClass("btn btn-success").Close(Localization.SelectFile);
-					new Button(writer).WithCustomAttribute("@click", "handleSelectLoadFolder").WithClass("btn btn-success").Close(Localization.SelectFolder);
+					using (new Div(writer).WithClass("d-flex mt-3 justify-content-left").End())
+					{
+						if (Dialogs.Supported)
+						{
+							new Button(writer).WithCustomAttribute("@click", "handleSelectLoadFolder").WithClass("btn btn-success m-1").Close(Localization.SelectFolder);
+						}
+
+						new Input(writer).WithCustomAttribute("v-if", "load_path_exists").WithType("submit").WithClass("btn btn-primary m-1").WithValue(Localization.MenuLoad).Close();
+						new Button(writer).WithCustomAttribute("v-else").WithClass("btn btn-primary m-1").WithCustomAttribute("disabled").Close(Localization.MenuLoad);
+					}
 				}
 			}
 		}
@@ -36,41 +40,27 @@ public sealed class CommandsPage : VuePage
 			{
 				WriteLink(writer, "/Reset", Localization.MenuFileReset, "btn btn-danger");
 			}
-			using (new P(writer).End())
+			using (new P(writer).WithClass("mt-1 d-flex justify-content-left").End())
 			{
 				using (new Form(writer).End())
 				{
-					new Input(writer).WithClass("form-control").WithType("text").WithName("Path")
+					new Input(writer).WithClass("form-control m-1").WithType("text").WithName("Path")
 						.WithCustomAttribute("v-model", "export_path")
 						.WithCustomAttribute("@input", "handleExportPathChange").Close();
 				}
-
+				
+				if (Dialogs.Supported)
+				{
+					new Button(writer).WithCustomAttribute("@click", "handleSelectExportFolder").WithClass("btn btn-success m-1").Close(Localization.SelectFolder);
+				}
+			}
+			using (new P(writer).End())
+			{
 				using (new Form(writer).WithAction("/Export/UnityProject").WithMethod("post").End())
 				{
 					new Input(writer).WithType("hidden").WithName("Path").WithCustomAttribute("v-model", "export_path").Close();
-
-					new Input(writer).WithCustomAttribute("v-if", "export_path_has_files").WithType("submit").WithClass("btn btn-danger").WithValue(Localization.ExportUnityProject).Close();
-					new Button(writer).WithCustomAttribute("v-else-if", "export_path === ''").WithClass("btn btn-primary").WithCustomAttribute("disabled").Close(Localization.ExportUnityProject);
-					new Input(writer).WithCustomAttribute("v-else").WithType("submit").WithClass("btn btn-primary").WithValue(Localization.ExportUnityProject).Close();
-				}
-
-				using (new Form(writer).WithAction("/Export/PrimaryContent").WithMethod("post").End())
-				{
-					new Input(writer).WithType("hidden").WithName("Path").WithCustomAttribute("v-model", "export_path").Close();
-
-					new Input(writer).WithCustomAttribute("v-if", "export_path_has_files").WithType("submit").WithClass("btn btn-danger").WithValue(Localization.ExportPrimaryContent).Close();
-					new Button(writer).WithCustomAttribute("v-else-if", "export_path === ''").WithClass("btn btn-primary").WithCustomAttribute("disabled").Close(Localization.ExportPrimaryContent);
-					new Input(writer).WithCustomAttribute("v-else").WithType("submit").WithClass("btn btn-primary").WithValue(Localization.ExportPrimaryContent).Close();
-				}
-
-				if (Dialogs.Supported)
-				{
-					new Button(writer).WithCustomAttribute("@click", "handleSelectExportFolder").WithClass("btn btn-success").Close(Localization.SelectFolder);
-				}
-
-				using (new Div(writer).WithCustomAttribute("v-if", "export_path_has_files").End())
-				{
-					new P(writer).Close(Localization.WarningThisDirectoryIsNotEmptyAllContentWillBeDeleted);
+					new Button(writer).WithCustomAttribute("v-if", "export_path === ''").WithClass("btn btn-primary").WithCustomAttribute("disabled").Close("Select folder first");
+					new Input(writer).WithCustomAttribute("v-else").WithType("submit").WithClass("btn btn-primary").WithValue("Generate project").Close();
 				}
 			}
 		}

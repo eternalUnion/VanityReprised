@@ -1,3 +1,4 @@
+using AssetRipper.Export.UnityProjects.Configuration;
 using AssetRipper.GUI.Web.Pages;
 using AssetRipper.GUI.Web.Pages.Assets;
 using AssetRipper.GUI.Web.Pages.Bundles;
@@ -5,6 +6,7 @@ using AssetRipper.GUI.Web.Pages.Collections;
 using AssetRipper.GUI.Web.Pages.Resources;
 using AssetRipper.GUI.Web.Pages.Scenes;
 using AssetRipper.GUI.Web.Pages.Settings;
+using AssetRipper.Import.Configuration;
 using AssetRipper.Import.Logging;
 using AssetRipper.Web.Extensions;
 using Microsoft.AspNetCore.Builder;

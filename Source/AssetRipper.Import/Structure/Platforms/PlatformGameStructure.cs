@@ -127,7 +127,7 @@ namespace AssetRipper.Import.Structure.Platforms
 			return null;
 		}
 
-		public virtual void CollectFiles(bool skipStreamingAssets)
+		public virtual void CollectFiles(bool skipStreamingAssets, bool skipCampaignScenes, bool skipSpecialScenes)
 		{
 			if (this is MixedGameStructure)
 			{
@@ -142,8 +142,13 @@ namespace AssetRipper.Import.Structure.Platforms
 			CollectMainAssemblies();
 			if (!skipStreamingAssets)
 			{
-				CollectStreamingAssets(Files);
+				CollectStreamingAssets(Files, skipCampaignScenes, skipSpecialScenes);
 			}
+		}
+
+		public virtual void CollectFiles(bool skipStreamingAssets)
+		{
+			CollectFiles(skipStreamingAssets, false, false);
 		}
 
 		protected void CollectGameFiles(DirectoryInfo root, IDictionary<string, string> files)
@@ -205,10 +210,20 @@ namespace AssetRipper.Import.Structure.Platforms
 			}
 		}
 
+		private static List<string> campaignPrefixes = new List<string>()
+		{
+			"campaign_",
+		};
+
+		private static List<string> specialScenePrefixes = new List<string>()
+		{
+			"specialscenes_",
+		};
+
 		/// <summary>
 		/// Collect bundles from the Streaming Assets folder
 		/// </summary>
-		protected void CollectStreamingAssets(IDictionary<string, string> files)
+		protected void CollectStreamingAssets(IDictionary<string, string> files, bool skipCampaignScenes, bool skipSpecialScenes)
 		{
 			if (string.IsNullOrWhiteSpace(StreamingAssetsPath))
 			{
@@ -219,36 +234,61 @@ namespace AssetRipper.Import.Structure.Platforms
 			DirectoryInfo streamingDirectory = new DirectoryInfo(StreamingAssetsPath);
 			if (streamingDirectory.Exists)
 			{
-				CollectAssetBundlesRecursively(streamingDirectory, files);
+				List<string> prefixesToIgnore = new List<string>();
+				if (skipCampaignScenes)
+					prefixesToIgnore.AddRange(campaignPrefixes);
+				if (skipSpecialScenes)
+					prefixesToIgnore.AddRange(specialScenePrefixes);
+
+				CollectAssetBundlesRecursively(streamingDirectory, files, prefixesToIgnore);
 			}
 		}
 
 		/// <summary>
 		/// Collect asset bundles only from this directory
 		/// </summary>
-		protected void CollectAssetBundles(DirectoryInfo root, IDictionary<string, string> files)
+		protected void CollectAssetBundles(DirectoryInfo root, IDictionary<string, string> files, List<string> prefixesToIgnore)
 		{
 			foreach (FileInfo file in root.EnumerateFiles())
 			{
 				//if (file.Extension == AssetBundleExtension || file.Extension == AlternateBundleExtension)
 				if (BundleHeader.IsBundleHeader(file.FullName))
 				{
+					// Filter
+					string rawName = Path.GetFileName(file.Name);
+					if (prefixesToIgnore.Where(sceneName => rawName.StartsWith(sceneName)).Any())
+						continue;
+
+					// A very special case where Angry Level Loader generates extra bundles for backward compatibility
+					if (rawName.StartsWith("other_assets_") && rawName != "other_assets_all")
+						continue;
+
 					string name = Path.GetFileNameWithoutExtension(file.Name).ToLowerInvariant();
 					AddAssetBundle(files, name, file.FullName);
 				}
 			}
 		}
 
+		protected void CollectAssetBundles(DirectoryInfo root, IDictionary<string, string> files)
+		{
+			CollectAssetBundles(root, files, new List<string>());
+		}
+
 		/// <summary>
 		/// Collect asset bundles from this directory and all subdirectories
 		/// </summary>
-		protected void CollectAssetBundlesRecursively(DirectoryInfo root, IDictionary<string, string> files)
+		protected void CollectAssetBundlesRecursively(DirectoryInfo root, IDictionary<string, string> files, List<string> prefixesToIgnore)
 		{
-			CollectAssetBundles(root, files);
+			CollectAssetBundles(root, files, prefixesToIgnore);
 			foreach (DirectoryInfo directory in root.EnumerateDirectories())
 			{
-				CollectAssetBundlesRecursively(directory, files);
+				CollectAssetBundlesRecursively(directory, files, prefixesToIgnore);
 			}
+		}
+
+		protected void CollectAssetBundlesRecursively(DirectoryInfo root, IDictionary<string, string> files)
+		{
+			CollectAssetBundlesRecursively(root, files, new List<string>());
 		}
 
 		protected static void CollectAssemblies(DirectoryInfo root, IDictionary<string, string> assemblies)
