@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - RoomManager
+  - Body
+  - Forward
+  - Left
+  - Right
+  - ForwardR
+  - ForwardL
+  - Floor
+  - Wall
+  - Limb
+  - Head
+  - EndLimb
+  - Spider
+  - Door
+  - Glass
+  - GlassFloor
+  - Enemy
+  - StyleHUD
+  - ChallengeManager
+  - Piston
+  - PlayerPosInfo
+  - GunControl
+  - Breakable
+  - OptionsManager
+  - Moving
+  - MessageHud
+  - Coin
+  - Slippery
+  - Armor
+  - Metal
+  - IgnorePushes
+  - SoftFloor
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Environment
+  - Gib
+  - Limb
+  - BigCorpse
+  - EnemyTrigger
+  - AlwaysOnTop
+  - Projectile
+  - Invincible
+  - Invisible
+  - BrokenGlass
+  - PlayerOnly
+  - Virtual Screen
+  - GroundCheck
+  - EnemyWall
+  - Item
+  - Explosion
+  - Outdoors
+  - Outdoors Non-solid
+  - Armor
+  - GibLit
+  - VirtualRender
+  - SandboxGrabbable
+  - Portal
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: HUD
+    uniqueID: 3479309373
+    locked: 0

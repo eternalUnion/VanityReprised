@@ -1,6 +1,6 @@
 **/.vs/
 **/*.csproj.user
-packages/
+/packages/
 **/packages.config
 obj
 0Bins/
