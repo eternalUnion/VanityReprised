@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.alexeyperov.unity-dependencies-hunter": "https://github.com/AlexeyPerov/Unity-Dependencies-Hunter.git#upm",
     "com.unity.addressables": "1.21.9",
     "com.unity.burst": "1.6.6",
     "com.unity.inputsystem": "1.3.0",
