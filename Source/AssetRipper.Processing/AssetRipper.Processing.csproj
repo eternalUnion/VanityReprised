@@ -8,9 +8,12 @@
 
 	<ItemGroup>
 	  <PackageReference Include="AssetRipper.CIL" Version="1.1.1" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\AssetRipper.PackageGuid\AssetRipper.PackageGuid.csproj" />
+		<ProjectReference Include="..\AssetRipper.Addressables\AssetRipper.Addressables.csproj" />
 		<ProjectReference Include="..\AssetRipper.Import\AssetRipper.Import.csproj" />
 	</ItemGroup>
 

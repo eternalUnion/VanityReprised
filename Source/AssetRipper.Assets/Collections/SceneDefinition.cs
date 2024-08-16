@@ -43,17 +43,17 @@ public sealed class SceneDefinition
 	/// <summary>
 	/// The name of the scene, without any file extension.
 	/// </summary>
-	public required string Name { get; init; }
+	public required string Name { get; set; }
 
 	/// <summary>
 	/// The scene path without any file extension, relative to the project root directory.
 	/// </summary>
-	public required string Path { get; init; }
+	public required string Path { get; set; }
 
 	/// <summary>
 	/// The GUID of this scene. It gets used in the scene's meta file. This will not be <see cref="UnityGuid.Zero"/>.
 	/// </summary>
-	public required UnityGuid GUID { get; init; }
+	public required UnityGuid GUID { get; set; }
 
 	/// <summary>
 	/// All the <see cref="AssetCollection"/>s that make up this scene.

@@ -255,7 +255,7 @@ namespace AssetRipper.Import.Structure.Platforms
 				if (BundleHeader.IsBundleHeader(file.FullName))
 				{
 					// Filter
-					string rawName = Path.GetFileName(file.Name);
+					string rawName = Path.GetFileNameWithoutExtension(file.Name);
 					if (prefixesToIgnore.Where(sceneName => rawName.StartsWith(sceneName)).Any())
 						continue;
 

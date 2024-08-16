@@ -1,7 +1,9 @@
 ﻿using AssetRipper.HashAlgorithms;
 using AssetRipper.Import.Structure.Assembly;
 using AssetRipper.IO.Files.Utils;
+using AssetRipper.PackageGuid;
 using AssetRipper.SourceGenerated.Classes.ClassID_115;
+using Newtonsoft.Json;
 using System.Buffers.Binary;
 using System.Text;
 
@@ -73,6 +75,8 @@ public static class ScriptHashing
 		return CalculateScriptFileID(script.Namespace.Data, script.ClassName_R.Data);
 	}
 
+	private static PackageGuids packageGuids = null;
+
 	/// <summary>
 	/// Compute a unique hash of a script and use that as the Guid for the script.
 	/// </summary>
@@ -84,6 +88,20 @@ public static class ScriptHashing
 	/// <param name="className">The name of the script encoded as UTF8.</param>
 	public static UnityGuid CalculateScriptGuid(ReadOnlySpan<byte> assemblyName, ReadOnlySpan<byte> @namespace, ReadOnlySpan<byte> className)
 	{
+		if (packageGuids == null)
+		{
+			if (!File.Exists("Resources/packageGuids.json"))
+				throw new IOException("Required file not found: Resources/packageGuids.json");
+
+			packageGuids = JsonConvert.DeserializeObject<PackageGuids>(File.ReadAllText("Resources/packageGuids.json"));
+		}
+
+		string namespaceStr = Encoding.UTF8.GetString(@namespace);
+		string classStr = Encoding.UTF8.GetString(className);
+		ScriptData packageScript = packageGuids.Scripts.Where(d => d.Namespace == namespaceStr && d.ClassName == classStr).FirstOrDefault();
+		if (packageScript != null)
+			return UnityGuid.Parse(packageScript.Guid);
+
 		int length = assemblyName.Length + @namespace.Length + className.Length;
 		Span<byte> input = length < 1024 ? stackalloc byte[length] : GC.AllocateUninitializedArray<byte>(length);
 		assemblyName.CopyTo(input);

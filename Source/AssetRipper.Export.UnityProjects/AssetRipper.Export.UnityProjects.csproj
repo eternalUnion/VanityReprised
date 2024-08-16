@@ -12,9 +12,11 @@
 		<PackageReference Include="AssetRipper.Mining.PredefinedAssets" Version="1.3.2" />
 		<PackageReference Include="AssetRipper.Tpk" Version="1.0.0" />
 		<PackageReference Include="ICSharpCode.Decompiler" Version="8.2.0.7535" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\AssetRipper.PackageGuid\AssetRipper.PackageGuid.csproj" />
 		<ProjectReference Include="..\AssetRipper.Export.Modules.Audio\AssetRipper.Export.Modules.Audio.csproj" />
 		<ProjectReference Include="..\AssetRipper.Export.Modules.Models\AssetRipper.Export.Modules.Models.csproj" />
 		<ProjectReference Include="..\AssetRipper.Export.Modules.Shader\AssetRipper.Export.Modules.Shaders.csproj" />

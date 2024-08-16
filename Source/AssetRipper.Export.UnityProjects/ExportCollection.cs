@@ -73,7 +73,7 @@ namespace AssetRipper.Export.UnityProjects
 
 		protected string GetUniqueFileName(IUnityObjectBase asset, string dirPath)
 		{
-			string fileName = asset switch
+			string fileName = (asset.OriginalPath != null) ? Path.GetFileNameWithoutExtension(asset.OriginalPath) : asset switch
 			{
 				IPrefabInstance prefab => prefab.GetName(),
 				IShader shader when !string.IsNullOrEmpty(shader.OriginalName) => shader.OriginalName,
@@ -137,6 +137,9 @@ namespace AssetRipper.Export.UnityProjects
 		public abstract IEnumerable<IUnityObjectBase> Assets { get; }
 		public virtual IEnumerable<IUnityObjectBase> ExportableAssets => Assets;
 		public abstract string Name { get; }
+
+		public bool _exportable = true;
+		public bool Exportable => _exportable;
 
 		private const string MetaExtension = ".meta";
 		protected const string AssetExtension = "asset";

@@ -1,7 +1,10 @@
 using AssetRipper.Assets;
 using AssetRipper.Assets.Collections;
 using AssetRipper.IO.Files.Utils;
+using AssetRipper.Processing;
 using AssetRipper.SourceGenerated.Classes.ClassID_1034;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AssetRipper.Export.UnityProjects
 {
@@ -17,7 +20,7 @@ namespace AssetRipper.Export.UnityProjects
 		{
 			string subPath = Asset.OriginalName is not null || Asset.OriginalDirectory is not null
 				? Path.Combine(projectDirectory, DirectoryUtils.FixInvalidPathCharacters(Asset.OriginalDirectory ?? ""))
-				: Path.Combine(projectDirectory, AssetsKeyword, Asset.ClassName);
+				: Path.Combine(projectDirectory, AssetsKeyword, "ULTRAKILL Others", Asset.ClassName);
 			string fileName = GetUniqueFileName(Asset, subPath);
 
 			Directory.CreateDirectory(subPath);
@@ -78,7 +81,36 @@ namespace AssetRipper.Export.UnityProjects
 			return importer;
 		}
 
-		public override UnityGuid GUID { get; } = UnityGuid.NewGuid();
+		private bool _guidSet = false;
+		private UnityGuid _GUID = UnityGuid.Zero;
+
+		public override UnityGuid GUID
+		{
+			get
+			{
+				if (!_guidSet)
+				{
+					_guidSet = true;
+
+					if (!GameData.ObjectGuids.TryGetValue(Asset, out _GUID))
+					{
+						MD5 md5 = MD5.Create();
+
+						string uniqueIdentifier = $"{Asset.Collection.Name ?? ""}/{Asset.PathID}";
+						byte[] hashArr = md5.ComputeHash(Encoding.UTF8.GetBytes(uniqueIdentifier));
+
+						_GUID = new UnityGuid(hashArr.AsSpan());
+					}
+				}
+
+				return _GUID;
+			}
+		}
+		public void SetGuid(UnityGuid guid)
+		{
+			_GUID = guid;
+		}
+
 		public override IAssetExporter AssetExporter { get; }
 		public override AssetCollection File => Asset.Collection;
 		public override IEnumerable<IUnityObjectBase> Assets

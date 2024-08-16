@@ -98,8 +98,8 @@ namespace AssetRipper.Export.UnityProjects.Project
 		/// <summary>
 		/// A one-to-one dictionary of export id's
 		/// </summary>
-		private readonly Dictionary<IUnityObjectBase, long> m_exportIDs = new();
+		protected readonly Dictionary<IUnityObjectBase, long> m_exportIDs = new();
 
-		private readonly HashSet<long> m_exportAssetIds = new();
+		protected readonly HashSet<long> m_exportAssetIds = new();
 	}
 }

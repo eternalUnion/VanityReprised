@@ -33,7 +33,7 @@ namespace AssetRipper.Export.UnityProjects.AudioMixers
 			}
 		}
 
-		private uint m_nextExportID;
+		private uint m_nextExportID = 2;
 
 		protected override long GenerateExportID(IUnityObjectBase asset)
 		{

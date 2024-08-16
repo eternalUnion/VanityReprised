@@ -1,4 +1,5 @@
-﻿using AssetRipper.Assets.Bundles;
+﻿using AssetRipper.Assets;
+using AssetRipper.Assets.Bundles;
 using AssetRipper.Assets.Collections;
 using AssetRipper.Import.Structure;
 using AssetRipper.Import.Structure.Assembly.Managers;
@@ -12,6 +13,9 @@ public record GameData(
 	IAssemblyManager AssemblyManager,
 	PlatformGameStructure? PlatformStructure)
 {
+	public static readonly Dictionary<IUnityObjectBase, UnityGuid> ObjectGuids = new Dictionary<IUnityObjectBase, UnityGuid>();
+	public static readonly Dictionary<IUnityObjectBase, UnityGuid> ObjectsToMerge = new Dictionary<IUnityObjectBase, UnityGuid>();
+
 	public ProcessedAssetCollection AddNewProcessedCollection(string name)
 	{
 		return GameBundle.AddNewProcessedCollection(name, ProjectVersion);

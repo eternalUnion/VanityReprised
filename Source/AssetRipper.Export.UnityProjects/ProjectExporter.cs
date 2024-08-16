@@ -3,6 +3,7 @@ using AssetRipper.Assets.Bundles;
 using AssetRipper.Import.Configuration;
 using AssetRipper.Import.Logging;
 using AssetRipper.IO.Files;
+using AssetRipper.Processing;
 using AssetRipper.SourceGenerated;
 
 namespace AssetRipper.Export.UnityProjects
@@ -117,6 +118,18 @@ namespace AssetRipper.Export.UnityProjects
 					foreach (IUnityObjectBase element in collection.Assets)
 					{
 						queued.Add(element);
+					}
+
+					if (collection is ExportCollection exportCollection)
+					{
+						if (GameData.ObjectsToMerge.ContainsKey(asset))
+						{
+							exportCollection._exportable = false;
+						}
+						else if (asset.MainAsset != null && GameData.ObjectsToMerge.ContainsKey(asset.MainAsset))
+						{
+							exportCollection._exportable = false;
+						}
 					}
 					collections.Add(collection);
 				}

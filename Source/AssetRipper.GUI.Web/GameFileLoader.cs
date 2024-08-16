@@ -34,6 +34,9 @@ public static class GameFileLoader
 
 	public static void Reset()
 	{
+		GameData.ObjectGuids.Clear();
+		GameData.ObjectsToMerge.Clear();
+
 		if (GameData is not null)
 		{
 			GameData = null;

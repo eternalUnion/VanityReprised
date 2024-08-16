@@ -30,7 +30,7 @@ public class CoreConfiguration
 	/// <summary>
 	/// The path to create a new unity project in
 	/// </summary>
-	public string ProjectRootPath => Path.Combine(ExportRootPath, "ExportedProject");
+	public string ProjectRootPath => ExportRootPath;
 	public string AssetsPath => Path.Combine(ProjectRootPath, "Assets");
 	public string ProjectSettingsPath => Path.Combine(ProjectRootPath, "ProjectSettings");
 	public string AuxiliaryFilesPath => Path.Combine(ExportRootPath, "AuxiliaryFiles");

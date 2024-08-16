@@ -32,7 +32,7 @@ public class ExportHandler
 	{
 		Settings.ImportSettings = new ImportSettings()
 		{
-			IgnoreStreamingAssets = true,// false,
+			IgnoreStreamingAssets = false,
 			ScriptContentLevel = ScriptContentLevel.Level1,
 
 			// Preserve custom settings
@@ -48,7 +48,7 @@ public class ExportHandler
 			SaveSettingsToDisk = true,
 			ScriptExportMode = ScriptExportMode.Decompiled,
 			ScriptLanguageVersion = ScriptLanguageVersion.AutoSafe,
-			ShaderExportMode = ShaderExportMode.Decompile,
+			ShaderExportMode = ShaderExportMode.Dummy,
 			SpriteExportMode = SpriteExportMode.Native,
 			TextExportMode = TextExportMode.Parse,
 		};
@@ -107,6 +107,11 @@ public class ExportHandler
 		yield return new LightingDataProcessor();//Needs to be after static mesh separation
 		yield return new PrefabProcessor();
 		yield return new SpriteProcessor();
+
+		// Custom processor to match original paths from the addressable catalog
+		yield return new ResolveAssetPaths();
+		yield return new MergePackageAssets();
+		yield return new RemoveAssetBundleNames();
 	}
 
 	public void Export(GameData gameData, string outputPath)
@@ -150,9 +155,10 @@ public class ExportHandler
 	{
 		yield return new ProjectVersionPostExporter();
 		yield return new PackageManifestPostExporter();
-		yield return new StreamingAssetsPostExporter();
-		yield return new DllPostExporter();
-		yield return new PathIdMapExporter();
+		// yield return new StreamingAssetsPostExporter();
+		// yield return new DllPostExporter();
+		// yield return new PathIdMapExporter();
+		yield return new CopyBaseProject();
 	}
 
 	public GameData LoadAndProcess(IReadOnlyList<string> paths)
