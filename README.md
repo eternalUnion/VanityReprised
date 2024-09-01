@@ -1,6 +1,10 @@
 # Vanity Reprised
 
-This project is a fork of [Asset Ripper](https://github.com/AssetRipper/AssetRipper), specialized for ULTRAKILL.
+This project is a fork of [Asset Ripper](https://github.com/AssetRipper/AssetRipper), specialized for creating level editors for ULTRAKILL.
+
+Useful resources:
+- [Rude wiki](https://coolboi21.github.io/Rude-Docs/#/Home)
+- [E&S wiki](https://layzyidiot.github.io/e-sw/#/)
 
 # Legal Disclaimers
 
