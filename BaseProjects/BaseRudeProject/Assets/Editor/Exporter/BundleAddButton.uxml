@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Button text="Create New Bundle" name="create-button" style="width: 100%; height: 40px; -unity-font: url(&apos;/Assets/ULTRAKILL Addressables/Fonts/VCR_OSD_MONO_1.001.ttf&apos;); font-size: 25px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 2.5px;" />
+</ui:UXML>

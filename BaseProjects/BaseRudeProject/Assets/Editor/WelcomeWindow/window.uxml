@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:ListView focusable="true" style="width: 100%; flex-grow: 1;">
+        <ui:Label text="Welcome to Rude Level Editor" style="-unity-font-style: bold; font-size: 20px; margin-bottom: 5px;" />
+        <ui:Label text="Useful resources:" style="margin-left: 3px;" />
+        <ui:Button text="Rude Wiki" name="rude-wiki" />
+        <ui:Button text="Envy &amp; Spite Wiki" name="es-wiki" />
+        <ui:Button text="Tundra Wiki" name="tundra-wiki" />
+        <ui:Label text="Open rude exporter via RUDE/Rude Exporter or by clicking the button below. You should always create your bundles and levels via the rude exporter." style="margin-left: 3px; margin-top: 20px; white-space: normal;" />
+        <ui:Button text="Open Rude Exporter" name="open-exporter" />
+        <ui:Label text="Avoid editing or creating files inside ULTRAKILL Assets. If you need to modify an asset in this folder, copy it to your maps folder." style="margin-left: 3px; margin-top: 10px; color: rgba(207, 0, 0, 255); white-space: normal; -unity-font-style: bold;" />
+    </ui:ListView>
+    <ui:Label text="You can open this window anytime from RUDE/Welcome window" style="color: rgba(170, 255, 253, 255); -unity-font-style: italic;" />
+    <ui:Toggle label="Show on startup" name="show-on-startup" />
+</ui:UXML>

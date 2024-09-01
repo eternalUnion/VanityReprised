@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Other
+  m_EditorClassIdentifier: 
+  m_GroupName: Other
+  m_Data:
+    m_SerializedData: []
+  m_GUID: bf2809dc76649a94d8402927325c7fcb
+  m_SerializeEntries:
+  - m_GUID: 822df8dc4092fe2418c2b4ea9a12c446
+    m_Address: AllAudio.mixer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 161b21e52f4d9ce4a89d7492b431a6e6
+    m_Address: DoorAudio.mixer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de1a7104454c38d4698485ae4e0ca225
+    m_Address: GoreAudio.mixer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3c40ef12635c3c4eac334becc93c313
+    m_Address: MusicAudio.mixer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7442a0473bb46a54d8a6ec55c07ce489
+    m_Address: UnfreezeableAudio.mixer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 81d9593b9c962094d86f7498ca6cf1ad, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2065bfd98d7897a4580c86a4ac192085, type: 2}
+    - {fileID: 11400000, guid: 19ab1f27a952c9e41b060a8546854e93, type: 2}

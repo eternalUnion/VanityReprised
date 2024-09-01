@@ -8,6 +8,7 @@ using AssetRipper.GUI.Web.Pages.Scenes;
 using AssetRipper.GUI.Web.Pages.Settings;
 using AssetRipper.Import.Configuration;
 using AssetRipper.Import.Logging;
+using AssetRipper.Processing;
 using AssetRipper.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -124,6 +125,16 @@ public static class WebApplicationLauncher
 		{
 			context.Response.DisableCaching();
 			return IndexPage.Instance.WriteToResponse(context.Response);
+		});
+		app.MapGet("/ExportRude", static () =>
+		{
+			GameData.ProjectToExport = GameData.BaseProject.Rude;
+			return Results.Redirect("/Commands");
+		});
+		app.MapGet("/ExportSpite", static () =>
+		{
+			GameData.ProjectToExport = GameData.BaseProject.Spite;
+			return Results.Redirect("/Commands");
 		});
 		app.MapGet("/Commands", CommandsPage.Instance.ToResult);
 		app.MapGet("/Privacy", PrivacyPage.Instance.ToResult);

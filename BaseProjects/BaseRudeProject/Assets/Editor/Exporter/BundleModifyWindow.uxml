@@ -1,0 +1,51 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="width: 100%; height: 100%; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+        <ui:VisualElement style="width: 100%; height: 40px; flex-direction: row; justify-content: space-between; flex-shrink: 0;">
+            <ui:Button text="Go back" name="go-back" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 80px;" />
+            <ui:VisualElement style="flex-shrink: 0; flex-grow: 0; flex-direction: row;">
+                <ui:Button name="port" text="Port Bundle" tooltip="Make all bundle assets addressable" style="flex-grow: 0; flex-shrink: 0; height: 40px; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;" />
+                <ui:Button name="addressables" text="Make Addressable" tooltip="Make all bundle assets addressable" style="flex-grow: 0; flex-shrink: 0; height: 40px; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;" />
+                <ui:Button name="open-folder" style="flex-grow: 0; flex-shrink: 0; font-size: 15px; width: 40px; height: 40px; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px;">
+                    <ui:VisualElement tooltip="Open bundle folder" style="background-image: url(&apos;/Assets/Editor/Exporter/folder.png&apos;); width: 100%; height: 100%;" />
+                </ui:Button>
+                <ui:Button name="export" style="flex-grow: 0; flex-shrink: 0; font-size: 15px; width: 40px; height: 40px; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+                    <ui:VisualElement tooltip="Export bundle" style="width: 100%; height: 100%; background-image: url(&apos;/Assets/Editor/Exporter/export.png&apos;);" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement style="width: auto; height: 2px; margin-left: 0; margin-bottom: 5px; margin-top: 5px; margin-right: 0; background-color: rgb(168, 168, 168); flex-shrink: 0;" />
+        <ui:ListView focusable="true" style="flex-shrink: 0; flex-grow: 1;">
+            <ui:VisualElement style="width: 100%; height: 100px; flex-direction: row; flex-shrink: 0;">
+                <ui:VisualElement name="icon" style="width: 100px; height: 100px; background-color: rgb(255, 255, 255); flex-shrink: 0; margin-right: 5px;" />
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                    <ui:VisualElement style="height: 100%; flex-grow: 1;">
+                        <ui:Label text="Bundle name" name="bundle-name" style="font-size: 20px; white-space: normal; color: rgb(255, 255, 255); -unity-font-style: bold;" />
+                        <ui:Label text="by Unknown" name="bundle-author" />
+                        <ui:VisualElement name="online-info" style="flex-grow: 1; margin-top: 7px; justify-content: flex-end;">
+                            <ui:Label text="This is an online level" style="color: rgb(0, 217, 255);" />
+                            <ui:Label text="Rating: " name="rating" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Foldout text="Change bundle information" value="true" style="margin-top: 5px; margin-bottom: 5px; flex-shrink: 0;">
+                <ui:TextField picking-mode="Ignore" label="Bundle name" name="bundle-name-input" />
+                <ui:TextField picking-mode="Ignore" label="Author" name="author-input" />
+                <uie:ObjectField label="Icon" name="icon-input" />
+            </ui:Foldout>
+            <ui:Foldout text="Advanced settings" value="false" style="flex-shrink: 0;">
+                <ui:Button text="Manual backup" name="backup" />
+                <ui:Label text="Bundle GUID:" name="guid-info" />
+                <ui:Button text="Regenerate GUID" name="regen-guid" />
+                <ui:Button text="Set GUID from online levels" name="set-guid" />
+            </ui:Foldout>
+            <ui:Foldout text="Online bundle changelog" value="false" name="online-foldout" style="flex-shrink: 0;" />
+            <ui:VisualElement style="flex-grow: 1; padding-top: 10px; width: 100%;">
+                <ui:Label text="Levels" style="font-size: 20px; -unity-font-style: bold;" />
+                <ui:VisualElement name="level-container" style="flex-grow: 1; flex-shrink: 0; width: 100%;" />
+                <ui:Button text="Create new level" name="create-level" style="width: 100%; height: 25px; margin-right: 0; margin-left: 0;" />
+                <ui:Button text="Import scene" name="import-scene" style="width: 100%; height: 25px; margin-right: 0; margin-left: 0;" />
+            </ui:VisualElement>
+        </ui:ListView>
+    </ui:VisualElement>
+</ui:UXML>

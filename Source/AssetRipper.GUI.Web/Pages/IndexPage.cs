@@ -52,7 +52,8 @@ public sealed class IndexPage : DefaultPage
 
 				using (new Div(writer).WithClass("d-flex justify-content-center").End())
 				{
-					WriteGetLink(writer, "/Commands", "Generate SPITE project", "btn btn-success m-1");
+					WriteGetLink(writer, "/ExportRude", "Generate RUDE project", "btn btn-success m-1");
+					WriteGetLink(writer, "/ExportSpite", "Generate SPITE project", "btn btn-success m-1");
 					WritePostLink(writer, "/Reset", Localization.MenuFileReset, "btn btn-danger m-1");
 				}
 			}

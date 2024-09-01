@@ -1,0 +1,276 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Music
+  m_EditorClassIdentifier: 
+  m_GroupName: Music
+  m_Data:
+    m_SerializedData: []
+  m_GUID: d04c86094636f514b9fac0350623ddfc
+  m_SerializeEntries:
+  - m_GUID: a39d3132dbc9c394c84675ea2f3a0805
+    m_Address: Assets/Music/0-2 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 0
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29676f1675b71e14fad1bbb3263704dc
+    m_Address: Assets/Music/0-1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 0
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac3424c8940afb94ba9a801dda601ba7
+    m_Address: Assets/Music/0-2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 0
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0edb20ba77748c4eaff2c77749c55f9
+    m_Address: Assets/Music/0-1 Mars Intro.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 0
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 679855afbf9a89e4fb3c197dcb701e95
+    m_Address: Assets/Music/0-1 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 0
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15d4aa87c4b281f41888a91bf6f4c616
+    m_Address: Assets/Music/1-1 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21ee25ea66d007f498ef312455bbfdb5
+    m_Address: Assets/Music/1-1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: febfcd2dffe25eb499c17417b5e0a58e
+    m_Address: Assets/Music/1-2 Dark Battle.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d2e5513617c5414fa41448a6a666548
+    m_Address: Assets/Music/1-2 Dark Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e93e96026015b124dac351c878869e26
+    m_Address: Assets/Music/1-2 Noise Battle.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c652d3728bd50ac4ba996aadd3aff770
+    m_Address: Assets/Music/1-2 Noise Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5cf41d4b37d331843ad11db5356c7f14
+    m_Address: Assets/Music/1-3 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b8d6c1f60b88994985cd76212cbdb09
+    m_Address: Assets/Music/1-3.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8655b118944451f4e9c0d3729c19fb8d
+    m_Address: Assets/Music/2-1 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 2
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5df5e81e3d8e0cf49979444fd8463895
+    m_Address: Assets/Music/2-1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 2
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a5337b97d5bf9a4d93024b0c814fa98
+    m_Address: Assets/Music/2-2 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 2
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edaafcef871968343a4a0032210d6d71
+    m_Address: Assets/Music/2-2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 2
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c7c25b44ab9d3c4c866e004d7d7fc98
+    m_Address: Assets/Music/2-3 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 2
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 045fee4c1e532264f83117a50fdfc399
+    m_Address: Assets/Music/2-3.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 2
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 980b7cd80a699734f94df836e6b82810
+    m_Address: Assets/Music/3-1 Glory Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 3
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1f7eaf4268a635c4587912eff1efd696
+    m_Address: Assets/Music/3-1 Glory.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 3
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53220dd485db9ae40a8eba4ee9639bf5
+    m_Address: Assets/Music/3-1 Guts Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 3
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c02ae0c1b0e44946837d67b6c2f597e
+    m_Address: Assets/Music/3-1 Guts.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 3
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7bf7af0ebc7fde44889fb4d15f07994
+    m_Address: Assets/Music/4-1 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bebc457f0755504468f6c6a1b338dacf
+    m_Address: Assets/Music/4-2 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d3a8e6f4b56a1e43a3dd9b7f313d8c6
+    m_Address: Assets/Music/4-2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a832611e4b58d124ab17f996548ef889
+    m_Address: Assets/Music/4-3 Phase 1 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2a39eede9932c6459db7b6295d34d9b
+    m_Address: Assets/Music/4-3 Phase 1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe1147c4e4a578d4cbf1bcc08921c7f0
+    m_Address: Assets/Music/4-3 Phase 2 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0fd10e61ccce41c43bccdbd1cc750f13
+    m_Address: Assets/Music/4-3 Phase 2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67a5ca68c242c844b98d5b786b579b7f
+    m_Address: Assets/Music/4-3 Phase 3.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 4
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c0260c204fb0a44a941658178726b08
+    m_Address: Assets/Music/5-1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 5
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86c3d82d3cffac546a0cb48ccf9629ce
+    m_Address: Assets/Music/5-3 Aftermath Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 5
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af3f42f21c519d14fb43cf2838ed0a58
+    m_Address: Assets/Music/5-3 Aftermath Intro.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 5
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d7f2a7154695124f8a347f50be1e204
+    m_Address: Assets/Music/5-3 Aftermath.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 5
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3aa6eaa2c75c61e40aec5526464133ab
+    m_Address: Assets/Music/5-3 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 5
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f60864b1a4e8f864c85e115cde334e86
+    m_Address: Assets/Music/5-3.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 5
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 458b23db6cf95414a8718bf29bebfbf9
+    m_Address: Assets/Music/6-1.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 6
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7dc93ba8b2421ba41a17a46a9a5d4704
+    m_Address: Assets/Music/6-1 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer 6
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4795e4a17e5010648aa48e7edbe357db
+    m_Address: Assets/Music/P-2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer P
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94bd8d8f481f4514f98bfe3e7d4edbaf
+    m_Address: Assets/Music/P-2 Clean.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Layer P
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: adb63c4d60379cd4abb00c79f89b62df
+    m_Address: Assets/Music
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 81d9593b9c962094d86f7498ca6cf1ad, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 91cda98b08765c54a86bacd6b5a4f0e0, type: 2}
+    - {fileID: 11400000, guid: d5ce838db12764c468493741839a5c40, type: 2}

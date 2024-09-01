@@ -1,9 +1,12 @@
 ﻿using AssetRipper.Export.UnityProjects.Configuration;
+using AssetRipper.Import.Logging;
 using AssetRipper.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +14,29 @@ namespace AssetRipper.Export.UnityProjects.Project
 {
 	public sealed class CopyBaseProject : IPostExporter
 	{
+		private static string RUDE_PROJECT_PATH = "Resources/BaseRudeProject.zip";
+		private static string RUDE_PROJECT_URL = "https://raw.githubusercontent.com/eternalUnion/VanityReprised/master/BaseProjects/BaseRudeProject.zip";
+
 		private static string SPITE_PROJECT_PATH = "Resources/BaseSpiteProject.zip";
+		private static string SPITE_PROJECT_URL = "https://raw.githubusercontent.com/eternalUnion/VanityReprised/master/BaseProjects/BaseSpiteProject.zip";
+
+		private static Stream? GetFileFromUrl(string url)
+		{
+			using (var client = new HttpClient())
+			{
+				Task<HttpResponseMessage> downloadTask = client.GetAsync(url);
+				downloadTask.Wait(30000);
+
+				if (!downloadTask.IsCompletedSuccessfully)
+					return null;
+
+				HttpResponseMessage result = downloadTask.Result;
+				if (result == null || !result.IsSuccessStatusCode)
+					return null;
+
+				return result.Content.ReadAsStream();
+			}
+		}
 
 		public void DoPostExport(GameData gameData, LibraryConfiguration settings)
 		{
@@ -35,10 +60,53 @@ namespace AssetRipper.Export.UnityProjects.Project
 				}
 			}
 
-			if (!File.Exists(SPITE_PROJECT_PATH))
-				throw new IOException($"Could not find the required file: {SPITE_PROJECT_PATH}");
+			string baseProjectPath;
+			string baseProjectUrl;
+			switch (GameData.ProjectToExport)
+			{
+				default:
+				case GameData.BaseProject.Rude:
+					baseProjectPath = RUDE_PROJECT_PATH;
+					baseProjectUrl = RUDE_PROJECT_URL;
+					break;
 
-			using (ZipArchive zip = new ZipArchive(File.Open(SPITE_PROJECT_PATH, FileMode.Open, FileAccess.Read), ZipArchiveMode.Read))
+				case GameData.BaseProject.Spite:
+					baseProjectPath = SPITE_PROJECT_PATH;
+					baseProjectUrl = SPITE_PROJECT_URL;
+					break;
+			}
+
+			// Try downloading from internet, fallback to local base project
+			Logger.Info("Downloading latest base project from the internet...");
+			Stream baseProjectStream = GetFileFromUrl(baseProjectUrl);
+			if (baseProjectStream != null)
+			{
+				try
+				{
+					using (ZipArchive zip = new ZipArchive(baseProjectStream, ZipArchiveMode.Read))
+					{
+						zip.ExtractToDirectory(settings.ProjectRootPath, true);
+					}
+
+					return;
+				}
+				catch (Exception)
+				{
+					Logger.Warning("Failed to use the zip from repo, will attempt to copy from local base project");
+				}
+			}
+			else
+			{
+				Logger.Warning("Failed to download the base project, will attempt to copy from local base project");
+			}
+
+			if (!File.Exists(baseProjectPath))
+			{
+				Logger.Error($"Could not find the required file: {baseProjectPath}");
+				throw new IOException($"Could not find the required file: {baseProjectPath}");
+			}
+
+			using (ZipArchive zip = new ZipArchive(File.Open(baseProjectPath, FileMode.Open, FileAccess.Read), ZipArchiveMode.Read))
 			{
 				zip.ExtractToDirectory(settings.ProjectRootPath, true);
 			}

@@ -56,7 +56,19 @@ public static class GameFileLoader
 		if (IsLoaded)
 		{
 			// Change behavior, create folder inside the selected folder instead of deleting the selected folder
-			string originalName = "Spite";
+			string originalName;
+			switch (GameData.ProjectToExport)
+			{
+				default:
+				case GameData.BaseProject.Rude:
+					originalName = "Rude";
+					break;
+
+				case GameData.BaseProject.Spite:
+					originalName = "Spite";
+					break;
+			}
+
 			string folderName = originalName;
 			int i = 0;
 			while (Directory.Exists(Path.Combine(path, folderName)))

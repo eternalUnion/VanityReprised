@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="height: 100px; border-left-color: rgb(82, 82, 82); border-right-color: rgb(82, 82, 82); border-top-color: rgb(82, 82, 82); border-bottom-color: rgb(82, 82, 82); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 1px; border-bottom-left-radius: 1px; border-top-right-radius: 1px; border-bottom-right-radius: 1px; margin-bottom: 2.5px;">
+        <ui:VisualElement style="width: 100%; height: 100%; flex-direction: row; flex-basis: 100%; align-items: center;">
+            <ui:VisualElement style="flex-shrink: 0; height: 97.5px; width: 130px; min-width: 100px; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+                <ui:VisualElement name="icon" style="width: 100%; height: 100%; -unity-background-scale-mode: stretch-to-fill; background-color: rgb(255, 255, 255);" />
+            </ui:VisualElement>
+            <ui:VisualElement style="width: 100%; flex-basis: initial; height: 100%; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+                <ui:VisualElement style="width: 100%; height: 100%; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 1px; border-bottom-left-radius: 1px; border-top-right-radius: 1px; border-bottom-right-radius: 1px; border-left-color: rgb(132, 132, 132); border-right-color: rgb(132, 132, 132); border-top-color: rgb(132, 132, 132); border-bottom-color: rgb(132, 132, 132); align-items: flex-start; flex-direction: row;">
+                    <ui:VisualElement style="flex-grow: 1; height: 100%;">
+                        <ui:Label text="Level Name" name="level-name" style="-unity-font: url(&apos;/Assets/Editor/Exporter/ExporterCustomFont.ttf&apos;); font-size: 15px; white-space: nowrap; padding-left: 2.5px; padding-top: 2.5px;" />
+                        <ui:VisualElement name="control-container" style="width: 100%; height: 100%; padding-left: 0; padding-right: 0; padding-top: 2.5px; padding-bottom: 2.5px; flex-direction: row; justify-content: space-around; align-items: stretch;">
+                            <ui:Button name="delete-level" style="-unity-font: url(&apos;/Assets/Editor/Exporter/ExporterCustomFont.ttf&apos;); white-space: normal; min-width: 0; flex-basis: 0; flex-shrink: 1; flex-grow: 1; color: rgb(255, 64, 64); padding-left: 5px; padding-right: 5px; padding-top: 9px; padding-bottom: 5px; align-items: center; justify-content: space-between;">
+                                <ui:VisualElement style="width: 20px; height: 20px; background-image: url(&apos;/Assets/Editor/Exporter/trashcan.png&apos;); flex-shrink: 0;" />
+                                <ui:Label text="Delete Level" style="white-space: normal; color: rgb(255, 83, 83);" />
+                            </ui:Button>
+                            <ui:Button name="modify-level" style="-unity-font: url(&apos;/Assets/Editor/Exporter/ExporterCustomFont.ttf&apos;); white-space: normal; min-width: 0; flex-basis: 0; flex-shrink: 1; flex-grow: 1; justify-content: space-between; align-items: center; padding-left: 5px; padding-right: 5px; padding-top: 9px; padding-bottom: 5px;">
+                                <ui:VisualElement style="width: 20px; height: 20px; background-image: url(&apos;/Assets/Editor/Exporter/wrench.png&apos;); flex-shrink: 0;" />
+                                <ui:Label text="Modify Level" style="white-space: normal; color: rgb(183, 183, 183);" />
+                            </ui:Button>
+                            <ui:Button name="open-level" style="-unity-font: url(&apos;/Assets/Editor/Exporter/ExporterCustomFont.ttf&apos;); white-space: normal; min-width: 0; flex-basis: 0; flex-shrink: 1; flex-grow: 1; justify-content: space-between; align-items: center; padding-left: 5px; padding-right: 5px; padding-top: 9px; padding-bottom: 5px;">
+                                <ui:VisualElement style="width: 20px; height: 20px; background-image: url(&apos;/Assets/Editor/Exporter/unity.png&apos;); flex-shrink: 0;" />
+                                <ui:Label text="Open Scene" style="white-space: normal; color: rgb(255, 255, 255);" />
+                            </ui:Button>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="order-container" style="flex-shrink: 0; width: 50px; height: 100%; align-items: center; justify-content: space-around;">
+                        <ui:Button text="↑ " name="move-up" style="margin-left: 1px; margin-right: 1px; padding-left: 1px; padding-right: 1px; width: 40px; height: 40px;" />
+                        <ui:Button text="↓ " name="move-down" style="margin-left: 1px; margin-right: 1px; padding-left: 1px; padding-right: 1px; width: 40px; height: 40px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

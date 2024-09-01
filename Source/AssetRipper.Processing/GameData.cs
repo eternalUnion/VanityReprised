@@ -15,6 +15,13 @@ public record GameData(
 {
 	public static readonly Dictionary<IUnityObjectBase, UnityGuid> ObjectGuids = new Dictionary<IUnityObjectBase, UnityGuid>();
 	public static readonly Dictionary<IUnityObjectBase, UnityGuid> ObjectsToMerge = new Dictionary<IUnityObjectBase, UnityGuid>();
+	
+	public enum BaseProject
+	{
+		Rude,
+		Spite,
+	}
+	public static BaseProject ProjectToExport;
 
 	public ProcessedAssetCollection AddNewProcessedCollection(string name)
 	{

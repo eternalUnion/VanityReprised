@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="width: 100%; height: 100%; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+        <ui:VisualElement style="width: 100%; height: 40px; flex-direction: row; justify-content: space-between; flex-shrink: 0;">
+            <ui:Button text="Go back" name="go-back" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 80px;" />
+            <ui:VisualElement style="flex-shrink: 0; flex-grow: 0; flex-direction: row; justify-content: flex-start;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="margin-top: 5px; margin-bottom: 5px; background-color: rgb(168, 168, 168); width: 100%; height: 2px; flex-shrink: 0;" />
+        <ui:ListView focusable="true" style="width: 100%; height: 100%;">
+            <ui:VisualElement style="flex-direction: row;">
+                <ui:TextField picking-mode="Ignore" label="Output path" name="output" tooltip="Where the angry file will be copied" style="flex-grow: 1; flex-shrink: 1;" />
+                <ui:Button text="Open" name="open-output" style="margin-left: 1px; margin-right: 3px;" />
+            </ui:VisualElement>
+            <ui:Label text="You can find the output path by pressing &apos;Open Levels Folder&apos; inside Angry settings" style="white-space: normal; color: rgb(164, 164, 164);" />
+            <ui:VisualElement style="height: 20px;" />
+            <ui:Toggle label="Confirm before export" tooltip="Display a prompt showing bundle information before exporting, which allows cancelling accidental exports" name="confirm-export" />
+            <ui:Toggle label="Summary after export" tooltip="Display a window showing bundle information and file path after export" name="export-summary" />
+            <ui:VisualElement style="height: 8px;" />
+            <ui:Toggle label="Warn if no changes made" tooltip="Before exporting, check if the current angry file has the same hash as the current project. Show a dialog if no changes were made to the bundle before exporting" name="warn-unchanged" />
+            <ui:VisualElement style="height: 20px;" />
+            <ui:Label text="Auto Backup" style="-unity-font-style: bold; font-size: 14px;" />
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                <ui:TextField picking-mode="Ignore" label="Backup path" name="backup-path" tooltip="Where to save backup files" style="flex-grow: 1; flex-shrink: 1;" />
+                <ui:Button text="Open" name="open-backup-folder" />
+            </ui:VisualElement>
+            <ui:Toggle label="Backup before export" name="backup-on-export" />
+            <ui:VisualElement name="backup-div" style="flex-grow: 1; margin-left: 10px;">
+                <uie:IntegerField label="Maximum backup folder size" value="0" name="backup-size" tooltip="Maximum size (in MB) the backup folder can be. If the folder exceeds this limit, the oldest backup file is deleted until the folder is small enough." />
+                <uie:IntegerField label="Maximum folder size per bundle" value="0" name="backup-bundle-size" tooltip="Maximum size (in MB) a bundle backup folder can be. If the folder exceeds this limit, the oldest backup file is deleted until the folder is small enough." />
+            </ui:VisualElement>
+            <ui:Label text="Currently, backup folder is ? MB" name="backup-info" style="color: rgb(156, 156, 156);" />
+            <ui:VisualElement style="height: 20px;" />
+            <ui:Label text="Editor Caches" style="-unity-font-style: bold; font-size: 14px;" />
+            <ui:Button text="Clear level cache" name="clear-levels" />
+            <ui:Button text="Clear addressable cache" name="clear-addr" />
+        </ui:ListView>
+    </ui:VisualElement>
+</ui:UXML>

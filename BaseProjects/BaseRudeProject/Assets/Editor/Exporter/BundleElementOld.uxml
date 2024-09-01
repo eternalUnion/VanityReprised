@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="height: 100px; border-left-color: rgb(82, 82, 82); border-right-color: rgb(82, 82, 82); border-top-color: rgb(82, 82, 82); border-bottom-color: rgb(82, 82, 82); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 1px; border-bottom-left-radius: 1px; border-top-right-radius: 1px; border-bottom-right-radius: 1px; margin-bottom: 2.5px;">
+        <ui:VisualElement style="width: 100%; height: 100%; flex-direction: row; flex-basis: 100%; align-items: center;">
+            <ui:VisualElement style="flex-shrink: 0; height: 97.5px; width: 97.5px; min-width: 100px; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+                <ui:VisualElement name="icon" style="width: 100%; height: 100%; -unity-background-scale-mode: stretch-to-fill; background-color: rgb(255, 255, 255);" />
+            </ui:VisualElement>
+            <ui:VisualElement style="width: 100%; flex-basis: initial; height: 100%; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+                <ui:VisualElement style="width: 100%; height: 100%; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 1px; border-bottom-left-radius: 1px; border-top-right-radius: 1px; border-bottom-right-radius: 1px; border-left-color: rgb(132, 132, 132); border-right-color: rgb(132, 132, 132); border-top-color: rgb(132, 132, 132); border-bottom-color: rgb(132, 132, 132); align-items: flex-start;">
+                    <ui:Label text="Bundle Name" name="bundle-name" style="-unity-font: url(&apos;/Assets/ULTRAKILL Addressables/Fonts/VCR_OSD_MONO_1.001.ttf&apos;); font-size: 15px; white-space: nowrap; padding-left: 2.5px; padding-top: 2.5px;" />
+                    <ui:Label text="by &lt;AUTHOR NAME&gt;" name="bundle-author" style="-unity-font: url(&apos;/Assets/ULTRAKILL Addressables/Fonts/VCR_OSD_MONO_1.001.ttf&apos;); color: rgb(125, 125, 125); padding-left: 2.5px;" />
+                    <ui:VisualElement style="width: 100%; height: 100%; padding-left: 0; padding-right: 0; padding-top: 2.5px; padding-bottom: 2.5px; flex-direction: row; justify-content: space-around; align-items: stretch;">
+                        <ui:Button text="Delete Bundle" name="delete-bundle" style="-unity-font: url(&apos;/Assets/ULTRAKILL Addressables/Fonts/VCR_OSD_MONO_1.001.ttf&apos;); white-space: normal; min-width: 0; flex-basis: 0; flex-shrink: 1; flex-grow: 1; color: rgb(255, 64, 64);" />
+                        <ui:Button text="Modify Bundle" name="modify-bundle" style="-unity-font: url(&apos;/Assets/ULTRAKILL Addressables/Fonts/VCR_OSD_MONO_1.001.ttf&apos;); white-space: normal; min-width: 0; flex-basis: 0; flex-shrink: 1; flex-grow: 1;" />
+                        <ui:Button text="Export Bundle" name="export-bundle" style="-unity-font: url(&apos;/Assets/ULTRAKILL Addressables/Fonts/VCR_OSD_MONO_1.001.ttf&apos;); white-space: normal; min-width: 0; flex-basis: 0; flex-shrink: 1; flex-grow: 1;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

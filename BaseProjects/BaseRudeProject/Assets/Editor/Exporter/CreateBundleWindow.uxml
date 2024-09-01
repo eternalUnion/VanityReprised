@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="width: 100%; height: 100%; padding-left: 2.5px; padding-right: 2.5px; padding-top: 2.5px; padding-bottom: 2.5px;">
+        <ui:VisualElement style="width: 100%; height: 40px; flex-direction: row; justify-content: space-between; flex-shrink: 0;">
+            <ui:Button text="Go back" name="cancel-top" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; min-width: 80px;" />
+            <ui:VisualElement style="flex-shrink: 0; flex-grow: 0; flex-direction: row; justify-content: flex-start;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="width: 100%; height: 2px; margin-top: 5px; margin-bottom: 5px; flex-shrink: 0; background-color: rgb(168, 168, 168);" />
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:TextField picking-mode="Ignore" label="Bundle name" name="bundle-name" />
+            <ui:TextField picking-mode="Ignore" label="Author" name="author" />
+            <uie:ObjectField label="Bundle icon" allow-scene-objects="false" name="bundle-icon" />
+            <ui:VisualElement style="height: 20px;" />
+            <ui:Toggle label="Custom folder name" name="folder-name-toggle" />
+            <ui:TextField picking-mode="Ignore" label="Folder name" name="folder-name" tooltip="Name of the folder that will be created in /Assets/Maps. The folder name can be changed later on." />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-direction: row; width: 100%; height: 50px; justify-content: space-around;">
+            <ui:Button text="Cancel" name="cancel-bottom" style="height: 100%; flex-grow: 1; min-width: 0; flex-shrink: 1; flex-basis: 0;" />
+            <ui:Button text="Create bundle" name="create-button" style="height: 100%; flex-grow: 1; min-width: 0; flex-shrink: 1; flex-basis: 0;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
