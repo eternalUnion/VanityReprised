@@ -131,11 +131,6 @@ public static class WebApplicationLauncher
 			GameData.ProjectToExport = GameData.BaseProject.Rude;
 			return Results.Redirect("/Commands");
 		});
-		app.MapGet("/ExportSpite", static () =>
-		{
-			GameData.ProjectToExport = GameData.BaseProject.Spite;
-			return Results.Redirect("/Commands");
-		});
 		app.MapGet("/Commands", CommandsPage.Instance.ToResult);
 		app.MapGet("/Privacy", PrivacyPage.Instance.ToResult);
 		app.MapGet("/Licenses", LicensesPage.Instance.ToResult);

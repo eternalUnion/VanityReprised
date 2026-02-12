@@ -3,8 +3,8 @@
 This project is a fork of [Asset Ripper](https://github.com/AssetRipper/AssetRipper), specialized for creating level editors for ULTRAKILL.
 
 Useful resources:
-- [Rude wiki](https://coolboi21.github.io/Rude-Docs/#/Home)
-- [E&S wiki](https://layzyidiot.github.io/e-sw/#/)
+- [ULTRAMapping Docs](https://envy-spite-team.github.io/ULTRAMappingDocs/)
+- [Rude wiki(Outdated)](https://coolboi21.github.io/Rude-Docs/#/Home)
 
 # Legal Disclaimers
 

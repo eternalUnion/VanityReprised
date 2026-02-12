@@ -17,9 +17,6 @@ namespace AssetRipper.Export.UnityProjects.Project
 		private static string RUDE_PROJECT_PATH = "Resources/BaseRudeProject.zip";
 		private static string RUDE_PROJECT_URL = "https://raw.githubusercontent.com/eternalUnion/VanityReprised/master/BaseProjects/BaseRudeProject.zip";
 
-		private static string SPITE_PROJECT_PATH = "Resources/BaseSpiteProject.zip";
-		private static string SPITE_PROJECT_URL = "https://raw.githubusercontent.com/eternalUnion/VanityReprised/master/BaseProjects/BaseSpiteProject.zip";
-
 		private static Stream? GetFileFromUrl(string url)
 		{
 			using (var client = new HttpClient())
@@ -60,21 +57,8 @@ namespace AssetRipper.Export.UnityProjects.Project
 				}
 			}
 
-			string baseProjectPath;
-			string baseProjectUrl;
-			switch (GameData.ProjectToExport)
-			{
-				default:
-				case GameData.BaseProject.Rude:
-					baseProjectPath = RUDE_PROJECT_PATH;
-					baseProjectUrl = RUDE_PROJECT_URL;
-					break;
-
-				case GameData.BaseProject.Spite:
-					baseProjectPath = SPITE_PROJECT_PATH;
-					baseProjectUrl = SPITE_PROJECT_URL;
-					break;
-			}
+			string baseProjectPath = RUDE_PROJECT_PATH;
+			string baseProjectUrl = RUDE_PROJECT_URL;
 
 			// Try downloading from internet, fallback to local base project
 			/*Logger.Info("Downloading latest base project from the internet...");

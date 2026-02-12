@@ -19,7 +19,6 @@ public record GameData(
 	public enum BaseProject
 	{
 		Rude,
-		Spite,
 	}
 	public static BaseProject ProjectToExport;
 
