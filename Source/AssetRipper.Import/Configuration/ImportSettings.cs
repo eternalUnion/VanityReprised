@@ -80,6 +80,12 @@ public sealed record class ImportSettings
 	[JsonIgnore] public bool Export_campaign_scenes_level7_4 { get; set; } = false;
 	[JsonIgnore] public bool Export_campaign_scenes_level7_s { get; set; } = false;
 
+	// Layer 8
+	[JsonIgnore] public bool Export_campaign_scenes_level8_1 { get; set; } = false;
+	[JsonIgnore] public bool Export_campaign_scenes_level8_2 { get; set; } = false;
+	[JsonIgnore] public bool Export_campaign_scenes_level8_3 { get; set; } = false;
+	[JsonIgnore] public bool Export_campaign_scenes_level8_4 { get; set; } = false;
+
 	// Layer P
 	[JsonIgnore] public bool Export_campaign_scenes_levelp_1 { get; set; } = false;
 	[JsonIgnore] public bool Export_campaign_scenes_levelp_2 { get; set; } = false;

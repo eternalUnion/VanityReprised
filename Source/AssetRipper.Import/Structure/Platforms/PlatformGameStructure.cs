@@ -369,19 +369,32 @@ namespace AssetRipper.Import.Structure.Platforms
 
 							// Layer 7
 							case "campaign_scenes_level7-1":
-								if (!settings.Export_campaign_scenes_level5_1) continue; break;
+								if (!settings.Export_campaign_scenes_level7_1) continue; break;
 
 							case "campaign_scenes_level7-2":
-								if (!settings.Export_campaign_scenes_level5_2) continue; break;
+								if (!settings.Export_campaign_scenes_level7_2) continue; break;
 
 							case "campaign_scenes_level7-3":
-								if (!settings.Export_campaign_scenes_level5_3) continue; break;
+								if (!settings.Export_campaign_scenes_level7_3) continue; break;
 
 							case "campaign_scenes_level7-4":
-								if (!settings.Export_campaign_scenes_level5_4) continue; break;
+								if (!settings.Export_campaign_scenes_level7_4) continue; break;
 
 							case "campaign_scenes_level7-s":
-								if (!settings.Export_campaign_scenes_level5_s) continue; break;
+								if (!settings.Export_campaign_scenes_level7_s) continue; break;
+
+							// Layer 8
+							case "campaign_scenes_level8-1":
+								if (!settings.Export_campaign_scenes_level8_1) continue; break;
+
+							case "campaign_scenes_level8-2":
+								if (!settings.Export_campaign_scenes_level8_2) continue; break;
+
+							case "campaign_scenes_level8-3":
+								if (!settings.Export_campaign_scenes_level8_3) continue; break;
+
+							case "campaign_scenes_level8-4":
+								if (!settings.Export_campaign_scenes_level8_4) continue; break;
 
 							// Layer P
 							case "campaign_scenes_levelp-1":

@@ -82,6 +82,10 @@ public static class Commands
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level7_3 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level7_3));
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level7_4 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level7_4));
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level7_s = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level7_s));
+			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_1 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level8_1));
+			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_2 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level8_2));
+			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_3 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level8_3));
+			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_4 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level8_4));
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_levelp_1 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_levelp_1));
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_levelp_2 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_levelp_2));
 			GameFileLoader.Settings.ImportSettings.Export_specialscenes_scenes_creditsmuseum2 = form.ContainsKey(nameof(ImportSettings.Export_specialscenes_scenes_creditsmuseum2));

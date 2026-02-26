@@ -42,6 +42,8 @@ namespace AssetRipper.Export.UnityProjects.Project
 				"Assembly-CSharp",
 				"Naelstrof.JigglePhysics",
 				"NewBlood.LegacyInput",
+				"NewBlood.DomainReloading",
+				"NewBlood.EngineInterop",
 				"pcon.core",
 				"plog",
 				"plog.unity",
