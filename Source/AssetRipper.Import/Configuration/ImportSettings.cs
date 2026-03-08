@@ -23,6 +23,8 @@ public sealed record class ImportSettings
 		}
 	}
 
+	[JsonIgnore] public bool Export_all_scenes { get; set; } = false;
+
 	// Intermission
 	public bool Export_campaign_scenes_intermission1 { get; set; } = false;
 	public bool Export_campaign_scenes_intermission2 { get; set; } = false;

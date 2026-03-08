@@ -82,6 +82,9 @@ public sealed class IndexPage : DefaultPage
 		{
 			new Summary(writer).Close("Campaign scenes");
 
+			// export all because the user is too lazy to select all (im the users --doomah)
+			WriteCheckBox(writer, "Export all scenes", GameFileLoader.Settings.ImportSettings.Export_all_scenes, nameof(ImportSettings.Export_all_scenes), enabled);
+
 			// Intermission
 			using (new Details(writer).End())
 			{
