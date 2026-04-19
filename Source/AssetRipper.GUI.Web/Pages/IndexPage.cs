@@ -179,10 +179,10 @@ public sealed class IndexPage : DefaultPage
 			using (new Details(writer).End())
 			{
 				new Summary(writer).Close("Layer 8");
-				WriteCheckBox(writer, "8-1", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level7_1, nameof(ImportSettings.Export_campaign_scenes_level8_1), enabled);
-				WriteCheckBox(writer, "8-2", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level7_2, nameof(ImportSettings.Export_campaign_scenes_level8_2), enabled);
-				WriteCheckBox(writer, "8-3", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level7_3, nameof(ImportSettings.Export_campaign_scenes_level8_3), enabled);
-				WriteCheckBox(writer, "8-4", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level7_4, nameof(ImportSettings.Export_campaign_scenes_level8_4), enabled);
+				WriteCheckBox(writer, "8-1", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_1, nameof(ImportSettings.Export_campaign_scenes_level8_1), enabled);
+				WriteCheckBox(writer, "8-2", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_2, nameof(ImportSettings.Export_campaign_scenes_level8_2), enabled);
+				WriteCheckBox(writer, "8-3", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_3, nameof(ImportSettings.Export_campaign_scenes_level8_3), enabled);
+				WriteCheckBox(writer, "8-4", GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level8_4, nameof(ImportSettings.Export_campaign_scenes_level8_4), enabled);
 			}
 
 			// Layer P
