@@ -1,10 +1,14 @@
-# Vanity Reprised
+# Vanity Reprised (Last update: Fraud Patch 17d4)
 
-This project is a fork of [Asset Ripper](https://github.com/AssetRipper/AssetRipper), specialized for creating level editors for ULTRAKILL.
+This project is a fork of [Asset Ripper](https://github.com/AssetRipper/AssetRipper), specialized for creating level editors for ULTRAKILL. The levels are loaded using [AngryLevelLoader](https://thunderstore.io/c/ultrakill/p/EternalsTeam/AngryLevelLoader/).
 
-Useful resources:
+Useful resources for making levels:
 - [ULTRAMapping Docs](https://envy-spite-team.github.io/ULTRAMappingDocs/)
 - [Rude wiki(Outdated)](https://coolboi21.github.io/Rude-Docs/#/Home)
+
+# Quick installation guide
+
+[![Installation Guide](https://markdown-videos-api.jorgenkh.no/youtube/mSopkBLG58g)](https://www.youtube.com/watch?v=mSopkBLG58g)
 
 # Legal Disclaimers
 
