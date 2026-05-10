@@ -3,6 +3,7 @@
 This project is a fork of [Asset Ripper](https://github.com/AssetRipper/AssetRipper), specialized for creating level editors for ULTRAKILL. The levels are loaded using [AngryLevelLoader](https://thunderstore.io/c/ultrakill/p/EternalsTeam/AngryLevelLoader/).
 
 Useful resources for making levels:
+- [Rude wiki(New, WIP)](https://ultrakillcustoms.miraheze.org/wiki/Main_Page)
 - [ULTRAMapping Docs](https://envy-spite-team.github.io/ULTRAMappingDocs/)
 - [Rude wiki(Outdated)](https://coolboi21.github.io/Rude-Docs/#/Home)
 
