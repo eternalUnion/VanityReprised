@@ -24,8 +24,8 @@ public sealed record class ImportSettings
 	}
 
 	// Intermission
-	public bool Export_campaign_scenes_intermission1 { get; set; } = false;
-	public bool Export_campaign_scenes_intermission2 { get; set; } = false;
+	[JsonIgnore] public bool Export_campaign_scenes_intermission1 { get; set; } = false;
+	[JsonIgnore] public bool Export_campaign_scenes_intermission2 { get; set; } = false;
 
 	// Layer 0
 	[JsonIgnore] public bool Export_campaign_scenes_level0_1 { get; set; } = false;
