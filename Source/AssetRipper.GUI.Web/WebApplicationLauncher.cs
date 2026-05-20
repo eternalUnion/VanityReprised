@@ -1,3 +1,4 @@
+using AssetRipper.AccurateShaders;
 using AssetRipper.Export.UnityProjects.Configuration;
 using AssetRipper.GUI.Web.Pages;
 using AssetRipper.GUI.Web.Pages.Assets;
@@ -119,6 +120,10 @@ public static class WebApplicationLauncher
 		app.MapStaticFile("/css/site.css", "text/css");
 		app.MapStaticFile("/js/site.js", "text/javascript");
 		app.MapStaticFile("/js/commands_page.js", "text/javascript");
+		app.MapStaticFile("/before1.png", "image/png");
+		app.MapStaticFile("/after1.png", "image/png");
+		app.MapStaticFile("/before2.png", "image/png");
+		app.MapStaticFile("/after2.png", "image/png");
 
 		//Normal Pages
 		app.MapGet("/", (context) =>
@@ -126,10 +131,24 @@ public static class WebApplicationLauncher
 			context.Response.DisableCaching();
 			return IndexPage.Instance.WriteToResponse(context.Response);
 		});
-		app.MapGet("/ExportRude", static () =>
+		app.MapGet("/AccurateShaderInfo", (context) =>
 		{
-			GameData.ProjectToExport = GameData.BaseProject.Rude;
-			return Results.Redirect("/Commands");
+			context.Response.DisableCaching();
+			return AccurateShaderInfoPage.Instance.WriteToResponse(context.Response);
+		});
+		app.MapPost("/ExportRude", static (context) =>
+		{
+			async Task SaveSettingsAndRedirect()
+			{
+				IFormCollection form = await context.Request.ReadFormAsync();
+				AccurateShaderDefinition.AccurateShaders_2022_3_28f1.Export = form.ContainsKey(nameof(AccurateShaderDefinition.AccurateShaders_2022_3_28f1));
+				AccurateShaderDefinition.AccurateShaders_2022_3_29f1.Export = form.ContainsKey(nameof(AccurateShaderDefinition.AccurateShaders_2022_3_29f1));
+				
+				GameData.ProjectToExport = GameData.BaseProject.Rude;
+				context.Response.Redirect("/Commands");
+			};
+
+			return SaveSettingsAndRedirect();
 		});
 		app.MapGet("/Commands", CommandsPage.Instance.ToResult);
 		app.MapGet("/Privacy", PrivacyPage.Instance.ToResult);

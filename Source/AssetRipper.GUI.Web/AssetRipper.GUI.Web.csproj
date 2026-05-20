@@ -7,6 +7,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="StaticContent\after1.png" />
+	  <None Remove="StaticContent\after2.png" />
+	  <None Remove="StaticContent\before1.png" />
+	  <None Remove="StaticContent\before2.png" />
+	</ItemGroup>
+  
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <DefineConstants>OS_WINDOWS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <DefineConstants>OS_LINUX</DefineConstants>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AssetRipper.AccurateShaders\AssetRipper.AccurateShaders.csproj" />
 		<ProjectReference Include="..\AssetRipper.Decompilation.CSharp\AssetRipper.Decompilation.CSharp.csproj" />
 		<ProjectReference Include="..\AssetRipper.Export.PrimaryContent\AssetRipper.Export.PrimaryContent.csproj" />
 		<ProjectReference Include="..\AssetRipper.Export.UnityProjects\AssetRipper.Export.UnityProjects.csproj" />
@@ -24,6 +39,10 @@
 		<EmbeddedResource Include="StaticContent/favicon.ico" />
 		<EmbeddedResource Include="StaticContent/js/site.js" />
 		<EmbeddedResource Include="StaticContent/js/commands_page.js" />
+		<EmbeddedResource Include="StaticContent\after1.png" />
+		<EmbeddedResource Include="StaticContent\after2.png" />
+		<EmbeddedResource Include="StaticContent\before1.png" />
+		<EmbeddedResource Include="StaticContent\before2.png" />
 	</ItemGroup>
 
 	<ItemGroup>

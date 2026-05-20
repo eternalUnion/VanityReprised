@@ -1,4 +1,6 @@
-﻿using AssetRipper.Import.Configuration;
+﻿using AssetRipper.AccurateShaders;
+using AssetRipper.Export.UnityProjects.Configuration;
+using AssetRipper.Import.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -42,6 +44,9 @@ public static class Commands
 		static async Task<string?> ICommand.Execute(HttpRequest request)
 		{
 			IFormCollection form = await request.ReadFormAsync();
+
+			AccurateShaderDefinition.AccurateShaders_2022_3_28f1.Export = form.ContainsKey(nameof(AccurateShaderDefinition.AccurateShaders_2022_3_28f1));
+			AccurateShaderDefinition.AccurateShaders_2022_3_29f1.Export = form.ContainsKey(nameof(AccurateShaderDefinition.AccurateShaders_2022_3_29f1));
 
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_intermission1 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_intermission1));
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_intermission2 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_intermission2));
