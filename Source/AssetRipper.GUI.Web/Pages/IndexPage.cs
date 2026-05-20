@@ -25,9 +25,9 @@ public sealed class IndexPage : DefaultPage
 		forms.Add(new FormInfo($"form_{id_counter++}", url, "get"));
 	}
 
-	private void WritePostLink(TextWriter writer, string url, string name, string? @class = null, bool enabled = true)
+	private void WritePostLink(TextWriter writer, string url, string name, string? @class = null, bool enabled = true, ReadOnlySpan<(string, string?)> attrs = default)
 	{
-		new Input(writer).WithCustomAttribute(enabled ? "" : "disabled").WithForm($"form_{id_counter}").WithType("submit").WithClass(@class).WithValue(name.ToHtml()).Close();
+		new Input(writer).WithCustomAttribute(enabled ? "" : "disabled").WithCustomAttributes(attrs).WithForm($"form_{id_counter}").WithType("submit").WithClass(@class).WithValue(name.ToHtml()).Close();
 		forms.Add(new FormInfo($"form_{id_counter++}", url, "post"));
 	}
 
@@ -128,7 +128,7 @@ public sealed class IndexPage : DefaultPage
 		if (def.EditorInstalled && def.CanModify && def.AlreadyInstalled)
 			enabled = true;
 
-		WritePostLink(writer, "/UninstallAccurateShader", "Uninstall accurate shaders", "btn btn-danger m-1", enabled: enabled);
+		WritePostLink(writer, "/UninstallAccurateShader", "Uninstall accurate shaders", "btn btn-danger m-1", enabled: enabled, attrs: new ReadOnlySpan<(string, string?)>([ ("onclick", "return confirm('WARNING: This action will revert the modification done to the Unity Editor code, and cannot be undone without re-exporting the project. Proceed?');") ]));
 	}
 
 	private void WriteAccurateShader(TextWriter writer, AccurateShaderDefinition definition, string id)
@@ -136,7 +136,7 @@ public sealed class IndexPage : DefaultPage
 		using (new Div(writer).WithClass("d-flex justify-content-center").End())
 		{
 			bool enabled = true;
-			string text = $"Install accurate shaders for {definition.Editor}";
+			string text = $"Export accurate shaders for {definition.Editor}";
 
 			if (!definition.EditorInstalled)
 			{

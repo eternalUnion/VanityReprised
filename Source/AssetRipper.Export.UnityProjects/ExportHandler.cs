@@ -176,9 +176,6 @@ public class ExportHandler
 		Settings.ExportRootPath = outputPath;
 		Settings.SetProjectSettings(gameData.ProjectVersion, BuildTarget.NoTarget, TransferInstructionFlags.NoTransferInstructionFlags);
 
-		new AccurateShaderExporter(AccurateShaderDefinition.AccurateShaders_2022_3_28f1).DoPostExport(gameData, Settings);
-		return;
-
 		ProjectExporter projectExporter = new(Settings, gameData.AssemblyManager);
 		BeforeExport(projectExporter);
 		projectExporter.DoFinalOverrides(Settings);

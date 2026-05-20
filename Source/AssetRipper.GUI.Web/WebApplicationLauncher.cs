@@ -150,6 +150,69 @@ public static class WebApplicationLauncher
 
 			return SaveSettingsAndRedirect();
 		});
+		app.MapPost("/UninstallAccurateShader", static (context) =>
+		{
+			void TryUninstall(AccurateShaderDefinition def)
+			{
+				if (def.EditorInstalled && def.AlreadyInstalled)
+				{
+					if (!def.CanModify)
+					{
+						Logger.Error($"Cannot uninstall accurate shaders for Unity {def.Editor} since Vanity is not running with elevated privileges!");
+						return;
+					}
+
+#if OS_LINUX
+					string alteredPath = Path.Combine(def.ToolsPath, "_UnityShaderCompiler");
+#else
+					string alteredPath = Path.Combine(def.ToolsPath, "_UnityShaderCompiler.exe");
+#endif
+
+					if (!File.Exists(alteredPath) || AccurateShaderDefinition.GetMD5(alteredPath) != def.ShaderCompilerMD5)
+					{
+						Logger.Error($"Cannot uninstall accurate shaders for Unity {def.Editor}, because Vanity failed to locate the original shader compiler!");
+						return;
+					}
+
+					try
+					{
+						File.Move(alteredPath, def.ShaderCompilerPath, true);
+					}
+					catch (Exception ex)
+					{
+						Logger.Error(ex);
+						Logger.Error("Vanity failed to move the original shader compiler file to its original position!");
+					}
+
+#if OS_LINUX
+					try
+					{
+						var unixFileInfo = new Mono.Unix.UnixFileInfo(definition.ShaderCompilerPath);
+						if (unixFileInfo.Exists)
+						{
+							unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute;
+						}
+					}
+					catch (Exception ex)
+					{
+						Logger.Error(ex);
+					}
+#endif
+
+					Logger.Warning($"Uninstalled shader compiler for Unity {def.Editor}");
+				}
+			}
+
+			async Task Uninstall()
+			{
+				TryUninstall(AccurateShaderDefinition.AccurateShaders_2022_3_28f1);
+				TryUninstall(AccurateShaderDefinition.AccurateShaders_2022_3_29f1);
+
+				context.Response.Redirect("/");
+			}
+
+			return Uninstall();
+		});
 		app.MapGet("/Commands", CommandsPage.Instance.ToResult);
 		app.MapGet("/Privacy", PrivacyPage.Instance.ToResult);
 		app.MapGet("/Licenses", LicensesPage.Instance.ToResult);

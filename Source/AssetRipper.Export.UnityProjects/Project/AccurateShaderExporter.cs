@@ -58,15 +58,6 @@ namespace AssetRipper.Export.UnityProjects.Project
 			this.definition = definition;
 		}
 
-		private static string GetMD5(string filePath)
-		{
-			MD5 md5 = MD5.Create();
-			using (FileStream fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				return BitConverter.ToString(md5.ComputeHash(fs)).Replace("-", "").ToLowerInvariant();
-			}
-		}
-
 		#region Structures for binary file generation
 		struct TableEntry
 		{
@@ -146,7 +137,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 			string alteredPath = Path.Combine(definition.ToolsPath, "_UnityShaderCompiler.exe");
 #endif
 
-			if (File.Exists(alteredPath) && GetMD5(alteredPath) == definition.ShaderCompilerMD5)
+			if (File.Exists(alteredPath) && AccurateShaderDefinition.GetMD5(alteredPath) == definition.ShaderCompilerMD5)
 			{
 				Logger.Info($"Shader compiler already installed, overwriting");
 
@@ -179,7 +170,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 				return true;
 			}
 
-			if (!File.Exists(definition.ShaderCompilerPath) || GetMD5(definition.ShaderCompilerPath) != definition.ShaderCompilerMD5)
+			if (!File.Exists(definition.ShaderCompilerPath) || AccurateShaderDefinition.GetMD5(definition.ShaderCompilerPath) != definition.ShaderCompilerMD5)
 			{
 				Logger.Error("Could not locate the original shader compiler!");
 				return false;
@@ -203,7 +194,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 			{
 				Logger.Error(ex);
 
-				if (File.Exists(alteredPath) && GetMD5(alteredPath) == definition.ShaderCompilerMD5)
+				if (File.Exists(alteredPath) && AccurateShaderDefinition.GetMD5(alteredPath) == definition.ShaderCompilerMD5)
 				{
 					Logger.Error("Attempting to move back the original file");
 

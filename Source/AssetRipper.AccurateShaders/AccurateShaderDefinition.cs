@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 
 namespace AssetRipper.AccurateShaders
 {
@@ -11,6 +12,20 @@ namespace AssetRipper.AccurateShaders
 		public static AccurateShaderDefinition AccurateShaders_2022_3_28f1 = new("2022.3.28f1", "98de53ed3af19bfd719a667bef648c44");
 		public static AccurateShaderDefinition AccurateShaders_2022_3_29f1 = new("2022.3.29f1", "6e5b57f3a8a025dd0b4055c022f748f8");
 #endif
+
+		public static string GetMD5(string filePath)
+		{
+			MD5 md5 = MD5.Create();
+			using (FileStream fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				return BitConverter.ToString(md5.ComputeHash(fs)).Replace("-", "").ToLowerInvariant();
+			}
+		}
+
+		public static bool AtLeastOneAlreadyInstalled
+		{
+			get => AccurateShaders_2022_3_28f1.AlreadyInstalled || AccurateShaders_2022_3_29f1.AlreadyInstalled;
+		}
 
 		public bool Export = false;
 
