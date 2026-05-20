@@ -1,0 +1,3 @@
+[submodule "Source/RudeShaderMiddleman"]
+	path = Source/RudeShaderMiddleman
+	url = https://github.com/eternalUnion/RudeShaderMiddleman.git

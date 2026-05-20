@@ -4,8 +4,13 @@ namespace AssetRipper.AccurateShaders
 {
 	public class AccurateShaderDefinition
 	{
-		public static AccurateShaderDefinition AccurateShaders_2022_3_28f1 = new("2022.3.28f1");
-		public static AccurateShaderDefinition AccurateShaders_2022_3_29f1 = new("2022.3.29f1");
+#if OS_LINUX
+		public static AccurateShaderDefinition AccurateShaders_2022_3_28f1 = new("2022.3.28f1", TODO);
+		public static AccurateShaderDefinition AccurateShaders_2022_3_29f1 = new("2022.3.29f1", TODO);
+#else
+		public static AccurateShaderDefinition AccurateShaders_2022_3_28f1 = new("2022.3.28f1", "98de53ed3af19bfd719a667bef648c44");
+		public static AccurateShaderDefinition AccurateShaders_2022_3_29f1 = new("2022.3.29f1", "6e5b57f3a8a025dd0b4055c022f748f8");
+#endif
 
 		public bool Export = false;
 
@@ -13,6 +18,11 @@ namespace AssetRipper.AccurateShaders
 		/// Unity Editor version
 		/// </summary>
 		public string Editor { get; private set; }
+
+		/// <summary>
+		/// MD5 hash of the original shader compiler executable
+		/// </summary>
+		public string ShaderCompilerMD5 { get; private set; }
 
 		private string? _editorPath = null;
 		/// <summary>
@@ -128,9 +138,10 @@ namespace AssetRipper.AccurateShaders
 		public bool AlreadyInstalled => File.Exists(Path.Combine(EditorPath, "Editor", "Data", "Tools", "_UnityShaderCompiler.exe"));
 #endif
 
-		private AccurateShaderDefinition(string editor)
+		private AccurateShaderDefinition(string editor, string shaderCompilerMD5)
 		{
 			Editor = editor;
+			ShaderCompilerMD5 = shaderCompilerMD5;
 		}
 	}
 }

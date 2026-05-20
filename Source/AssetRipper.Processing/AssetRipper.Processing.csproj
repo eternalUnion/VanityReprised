@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\AssetRipper.PackageGuid\AssetRipper.PackageGuid.csproj" />
+		<ProjectReference Include="..\AssetRipper.AccurateShaders\AssetRipper.AccurateShaders.csproj" />
 		<ProjectReference Include="..\AssetRipper.Addressables\AssetRipper.Addressables.csproj" />
 		<ProjectReference Include="..\AssetRipper.Import\AssetRipper.Import.csproj" />
 	</ItemGroup>

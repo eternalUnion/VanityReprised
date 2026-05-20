@@ -111,6 +111,9 @@ namespace AssetRipper.Processing
 
 					foreach (var asset in collection.Assets.Select(pair => pair.Value))
 					{
+						if (asset.OriginalName != null && isGuid(asset.OriginalName))
+							GameData.OriginalGuids[asset] = asset.OriginalName;
+
 						SetDefaultGuid(asset);
 
 						if (asset.OriginalName != null)

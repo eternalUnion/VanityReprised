@@ -1,4 +1,5 @@
-﻿using AssetRipper.Assets.Bundles;
+﻿using AssetRipper.AccurateShaders;
+using AssetRipper.Assets.Bundles;
 using AssetRipper.Export.UnityProjects.Configuration;
 using AssetRipper.Export.UnityProjects.PathIdMapping;
 using AssetRipper.Export.UnityProjects.Project;
@@ -211,6 +212,14 @@ public class ExportHandler
 		// yield return new PathIdMapExporter();
 		yield return new DeleteSourceGeneratedScripts();
 		yield return new CopyBaseProject();
+
+		AccurateShaderExporter.alreadyExportedBinaries = false;
+
+		if (AccurateShaderDefinition.AccurateShaders_2022_3_28f1.Export)
+			yield return new AccurateShaderExporter(AccurateShaderDefinition.AccurateShaders_2022_3_28f1);
+
+		if (AccurateShaderDefinition.AccurateShaders_2022_3_29f1.Export)
+			yield return new AccurateShaderExporter(AccurateShaderDefinition.AccurateShaders_2022_3_29f1);
 	}
 
 	public GameData LoadAndProcess(IReadOnlyList<string> paths)

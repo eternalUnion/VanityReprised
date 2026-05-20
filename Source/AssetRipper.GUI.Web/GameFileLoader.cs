@@ -36,6 +36,7 @@ public static class GameFileLoader
 	{
 		GameData.ObjectGuids.Clear();
 		GameData.ObjectsToMerge.Clear();
+		GameData.OriginalGuids.Clear();
 
 		if (GameData is not null)
 		{
