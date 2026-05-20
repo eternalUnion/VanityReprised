@@ -116,9 +116,12 @@ namespace AssetRipper.Export.UnityProjects.Project
 			blobFile.Write(BitConverter.GetBytes(1024 * 1024 / 2));
 			blobFile.Seek(4 + 8 * (1024 * 1024 / 2), SeekOrigin.Begin);
 
+			byte[] decompressedParameterBlob = new byte[MB];
+			byte[] decompressedBlob = new byte[MB];
+
 			void AddSegment()
 			{
-				LZMACompressor compressor = new LZMACompressor(LZMACompressionLevel.Normal);
+				LZMACompressor compressor = new LZMACompressor(LZMACompressionLevel.Fast);
 				currentSegment.Seek(0, SeekOrigin.Begin);
 				compressedSegment.Seek(0, SeekOrigin.Begin);
 				compressedSegment.SetLength(0);
@@ -157,40 +160,40 @@ namespace AssetRipper.Export.UnityProjects.Project
 					continue;
 				}
 
-				// Read all blobs
+				using var compStream = new MemoryStream(shader.CompressedBlob);
+				(int, int) decompressedParameterBlobCache = (-1, -1);
+				(int, int) decompressedBlobCache = (-1, -1);
 
-				byte[][][] blobs = new byte[shader.CompressedLengths_AssetList_AssetList_UInt32.Count][][];
-
-				using (var compStream = new MemoryStream(shader.CompressedBlob))
+				byte[] ReadBlob(int i, int j, ref byte[] buff, ref (int, int) cache)
 				{
-					for (int i = 0; i < shader.CompressedLengths_AssetList_AssetList_UInt32.Count; i++)
-					{
-						blobs[i] = new byte[shader.CompressedLengths_AssetList_AssetList_UInt32[i].Count][];
+					if (cache.Item1 == i && cache.Item2 == j)
+						return buff;
 
-						for (int j = 0; j < shader.CompressedLengths_AssetList_AssetList_UInt32[i].Count; j++)
-						{
-							var compressedLength = shader.CompressedLengths_AssetList_AssetList_UInt32[i][j];
-							var decompressedLength = shader.DecompressedLengths_AssetList_AssetList_UInt32[i][j];
-							var decompressedBlob = new byte[decompressedLength];
-							
-							var segStream = new SegmentStream(compStream, shader.Offsets_AssetList_AssetList_UInt32[i][j], compressedLength);
-							var lz4Decoder = new Lz4DecoderStream(segStream);
-							lz4Decoder.Read(decompressedBlob, 0, (int)decompressedLength);
-							lz4Decoder.Dispose();
+					cache.Item1 = i;
+					cache.Item2 = j;
 
-							blobs[i][j] = decompressedBlob;
-						}
-					}
+					int decompressedLength = (int)shader.DecompressedLengths_AssetList_AssetList_UInt32[i][j];
+					int newLength = buff.Length;
+					while (newLength < decompressedLength)
+						newLength *= 2;
+
+					if (newLength != buff.Length)
+						buff = new byte[newLength];
+
+					using var segStream = new SegmentStream(compStream, shader.Offsets_AssetList_AssetList_UInt32[i][j], shader.CompressedLengths_AssetList_AssetList_UInt32[i][j]);
+					using Lz4DecoderStream decoder = new Lz4DecoderStream(segStream);
+					decoder.Read(buff, 0, decompressedLength);
+					return buff;
 				}
 
 				// Create segment table
 
-				List<TableEntry>[] blobIndex = new List<TableEntry>[blobs.Length];
+				List<TableEntry>[] blobIndex = new List<TableEntry>[shader.CompressedLengths_AssetList_AssetList_UInt32.Count];
 
 				for (int i = 0; i < blobIndex.Length; i++)
 				{
-					using MemoryStream blobStream = new MemoryStream(blobs[i][0]);
-					BinaryReader reader = new BinaryReader(blobStream);
+					ReadBlob(i, 0, ref decompressedBlob, ref decompressedBlobCache);
+					BinaryReader reader = new BinaryReader(new MemoryStream(decompressedBlob, false));
 
 					int entryCount = reader.ReadInt32();
 					blobIndex[i] = new List<TableEntry>(entryCount);
@@ -212,6 +215,15 @@ namespace AssetRipper.Export.UnityProjects.Project
 				{
 					Logger.Warning($"Skipping {shader.Name}. No GUID.");
 					continue;
+				}
+
+				if (shader.OriginalName == "ULTRAKILL-Standard")
+				{
+					Logger.Info($"Processing ULTRAKILL-Standard (this will take some time...)");
+				}
+				else
+				{
+					Logger.Info($"Processing shader {shader.OriginalName}");
 				}
 
 				entry.shaderKeywords = parsed.KeywordNames.Select(k => k.String).ToList();
@@ -350,6 +362,8 @@ namespace AssetRipper.Export.UnityProjects.Project
 						}
 					}
 
+					int gcCounter = 0;
+
 					// Process vertex shaders
 
 					foreach ((var vertexProg, var progParamBlobIndex) in Enumerable.Zip(vertexPrograms, vertexParams)/*.OrderBy(pair => ProgramPlatformIndex((ShaderGpuProgramType)pair.First.GpuProgramType))*/)
@@ -366,10 +380,9 @@ namespace AssetRipper.Export.UnityProjects.Project
 						int vertexBlob = platrofms.IndexOf((byte)platrofmIdx);
 
 						TableEntry blobEntry = blobIndex[vertexBlob][(int)vertexProg.BlobIndex];
-						byte[] shaderSegment = blobs[vertexBlob][blobEntry.Segment];
 
 						TableEntry parameterEntry = blobIndex[vertexBlob][(int)progParamBlobIndex];
-						ShaderParameters parameters = RudeShaderMiddlemanExtensions.ToShaderParameters(new AssetsFileReader(new MemoryStream(blobs[vertexBlob][parameterEntry.Segment], parameterEntry.Offset, parameterEntry.Length, false)), UNITY_VERSION, true);
+						ShaderParameters parameters = RudeShaderMiddlemanExtensions.ToShaderParameters(new AssetsFileReader(new MemoryStream(ReadBlob(vertexBlob, parameterEntry.Segment, ref decompressedParameterBlob, ref decompressedParameterBlobCache), parameterEntry.Offset, parameterEntry.Length, false)), UNITY_VERSION, true);
 
 						int statsALU;
 						int statsTex;
@@ -383,6 +396,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 						int sourceMap;
 						List<BindChannel> bindings = new List<BindChannel>();
 
+						byte[] shaderSegment = ReadBlob(vertexBlob, blobEntry.Segment, ref decompressedBlob, ref decompressedBlobCache);
 						using (BinaryReader shaderReader = new BinaryReader(new MemoryStream(shaderSegment, blobEntry.Offset, blobEntry.Length, false)))
 						{
 							int blobVersion = shaderReader.ReadInt32();
@@ -446,6 +460,12 @@ namespace AssetRipper.Export.UnityProjects.Project
 						varEntry.keywords = keywordMask;
 
 						variantMap[(guid, passNum, ProgramPlatformIndex((ShaderGpuProgramType)vertexProg.GpuProgramType))].Add(varEntry);
+
+						if (++gcCounter >= 100)
+						{
+							GC.Collect();
+							gcCounter = 0;
+						}
 					}
 
 					// Process fragment shaders
@@ -460,14 +480,9 @@ namespace AssetRipper.Export.UnityProjects.Project
 						int fragmentBlob = platforms.IndexOf((byte)platrofmIdx);
 
 						TableEntry blobEntry = blobIndex[fragmentBlob][(int)fragmentProg.BlobIndex];
-						byte[] shaderSegment = blobs[fragmentBlob][blobEntry.Segment];
 
 						TableEntry parameterEntry = blobIndex[fragmentBlob][(int)progParamBlobIndex];
-						ShaderParameters parameters = RudeShaderMiddlemanExtensions.ToShaderParameters(new AssetsFileReader(new MemoryStream(blobs[fragmentBlob][parameterEntry.Segment], parameterEntry.Offset, parameterEntry.Length, false)), UNITY_VERSION, true);
-
-						// DEBUG
-						if (parameters.UAVs.Count != 0)
-							;
+						ShaderParameters parameters = RudeShaderMiddlemanExtensions.ToShaderParameters(new AssetsFileReader(new MemoryStream(ReadBlob(fragmentBlob, parameterEntry.Segment, ref decompressedParameterBlob, ref decompressedParameterBlobCache), parameterEntry.Offset, parameterEntry.Length, false)), UNITY_VERSION, true);
 
 						int statsALU;
 						int statsTex;
@@ -481,6 +496,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 						int sourceMap;
 						List<BindChannel> bindings = new List<BindChannel>();
 
+						byte[] shaderSegment = ReadBlob(fragmentBlob, blobEntry.Segment, ref decompressedBlob, ref decompressedBlobCache);
 						using (BinaryReader shaderReader = new BinaryReader(new MemoryStream(shaderSegment, blobEntry.Offset, blobEntry.Length, false)))
 						{
 							int blobVersion = shaderReader.ReadInt32();
@@ -548,23 +564,28 @@ namespace AssetRipper.Export.UnityProjects.Project
 						varEntry.keywords = keywordMask;
 
 						variantMap[(guid, passNum, ProgramPlatformIndex((ShaderGpuProgramType)fragmentProg.GpuProgramType))].Add(varEntry);
+
+						if (++gcCounter >= 100)
+						{
+							GC.Collect();
+							gcCounter = 0;
+						}
 					}
 
 					entry.shaderPasses.Add(passEntry);
 				}
 
-				GC.Collect();
-
 				if (entry.shaderPasses.Count == 0)
 					continue;
 
 				entries[guid] = entry;
+				GC.Collect();
 			}
 
 			if (currentSegment.Length != 0)
 				AddSegment();
 
-			// Write files
+			// Write table file
 
 			string tablePath = Path.Combine(settings.ProjectRootPath, "table.zip");
 
