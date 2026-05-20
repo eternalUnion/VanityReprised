@@ -79,6 +79,10 @@ namespace AssetRipper.Export.UnityProjects.Project
 			Glcore,
 			Vulkan,
 		}
+
+		record SegmentCompressRequest(MemoryStream segment, MemoryStream compressedSegment, int segmentIndex);
+
+		record SegmentWriteRequest(MemoryStream segment, MemoryStream compressedSegment, int segmentIndex);
 		#endregion
 
 		public void DoPostExport(GameData gameData, LibraryConfiguration settings)
@@ -104,47 +108,155 @@ namespace AssetRipper.Export.UnityProjects.Project
 			Dictionary<(string, int, ShaderPlatformProgramType), List<VariantEntry>> variantMap = new();
 
 			// Blob binary data
-			using MemoryStream currentSegment = new(MB);
-			using MemoryStream compressedSegment = new(MB);
 			string blobsPath = Path.Combine(settings.ProjectRootPath, "blobs.bin");
 			if (File.Exists(blobsPath))
 				File.Delete(blobsPath);
 			using FileStream blobFile = File.Open(blobsPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-			int currentSegmentIndex = 0;
-			int currentSegmentPosition = 4 + 8 * (1024 * 1024 / 2);
 			blobFile.Seek(0, SeekOrigin.Begin);
 			blobFile.Write(BitConverter.GetBytes(1024 * 1024 / 2));
 			blobFile.Seek(4 + 8 * (1024 * 1024 / 2), SeekOrigin.Begin);
 
-			byte[] decompressedParameterBlob = new byte[MB];
-			byte[] decompressedBlob = new byte[MB];
+			// Thread communication data
+			Stack<(MemoryStream segment, MemoryStream decompressedSegment)> segments = new();	// Memory pool
+			Stack<SegmentCompressRequest> compressRequests = new();								// Main thread => Compressors
+			PriorityQueue<SegmentWriteRequest, int> writeRequests = new();						// Compressors => Writer
+			
+			Thread writeThread = null;
+			List<Thread> compressThreads = new();
 
-			void AddSegment()
+			MemoryStream currentSegment = new(MB);
+			MemoryStream compressedSegment = new(MB);
+
+			bool terminateWriteThread = false;
+			void BlobWriteThread()
 			{
-				LZMACompressor compressor = new LZMACompressor(LZMACompressionLevel.Fast);
-				currentSegment.Seek(0, SeekOrigin.Begin);
-				compressedSegment.Seek(0, SeekOrigin.Begin);
-				compressedSegment.SetLength(0);
-				compressor.Compress(currentSegment, compressedSegment);
+				int currentSegmentPosition = 4 + 8 * (1024 * 1024 / 2);
+				int nextExpectedSegment = 0;
 
-				// Write segment position and size
-				blobFile.Seek(4 + 8 * currentSegmentIndex, SeekOrigin.Begin);
-				blobFile.Write(BitConverter.GetBytes(currentSegmentPosition));
-				blobFile.Write(BitConverter.GetBytes(compressedSegment.Length));
+				while (true)
+				{
+					SegmentWriteRequest req = null;
 
-				// Write the binary data
-				blobFile.Seek(currentSegmentPosition, SeekOrigin.Begin);
-				compressedSegment.Seek(0, SeekOrigin.Begin);
-				compressedSegment.CopyTo(blobFile);
+					lock (writeRequests)
+					{
+						// assert (terminateWriteThread && writeRequests.Count == 0) || (writeRequests.Count != 0 && writeRequests.Peek().segmentIndex == nextExpectedSegment)
+						while ((!terminateWriteThread || writeRequests.Count != 0) && (writeRequests.Count == 0 || writeRequests.Peek().segmentIndex != nextExpectedSegment))
+							Monitor.Wait(writeRequests);
 
-				// Update the variables
-				currentSegment.Seek(0, SeekOrigin.Begin);
-				currentSegment.SetLength(0);
-				currentSegmentIndex += 1;
-				currentSegmentPosition += (int)compressedSegment.Length;
+						if (terminateWriteThread && writeRequests.Count == 0)
+							return;
+
+						req = writeRequests.Dequeue();
+						nextExpectedSegment += 1;
+					}
+
+					// Write segment position and size
+					blobFile.Seek(4 + 8 * req.segmentIndex, SeekOrigin.Begin);
+					blobFile.Write(BitConverter.GetBytes(currentSegmentPosition));
+					blobFile.Write(BitConverter.GetBytes(req.compressedSegment.Length));
+
+					// Write the binary data
+					blobFile.Seek(currentSegmentPosition, SeekOrigin.Begin);
+					req.compressedSegment.Seek(0, SeekOrigin.Begin);
+					req.compressedSegment.CopyTo(blobFile);
+
+					// Update the variables
+					req.segment.Seek(0, SeekOrigin.Begin);
+					req.segment.SetLength(0);
+					currentSegmentPosition += (int)req.compressedSegment.Length;
+
+					lock (segments)
+					{
+						segments.Push((req.segment, req.compressedSegment));
+					}
+				}
 			}
 
-			//foreach (var asset in gameData.GameBundle.Bundles[0].Collections[0].Assets.Values)
+			bool terminateCompressThread = false;
+			void BlobCompressThread()
+			{
+				while (true)
+				{
+					SegmentCompressRequest req = null;
+
+					lock (compressRequests)
+					{
+						// assert terminateCompressThread || compressRequests.Count != 0
+						while (!terminateCompressThread && compressRequests.Count == 0)
+							Monitor.Wait(compressRequests);
+
+						if (terminateCompressThread && compressRequests.Count == 0)
+							return;
+
+						req = compressRequests.Pop();
+					}
+
+					LZMACompressor compressor = new LZMACompressor(LZMACompressionLevel.Fast);
+					req.segment.Seek(0, SeekOrigin.Begin);
+					req.compressedSegment.Seek(0, SeekOrigin.Begin);
+					req.compressedSegment.SetLength(0);
+					compressor.Compress(req.segment, req.compressedSegment);
+
+					lock (writeRequests)
+					{
+						writeRequests.Enqueue(new SegmentWriteRequest(req.segment, req.compressedSegment, req.segmentIndex), req.segmentIndex);
+						Monitor.Pulse(writeRequests);
+					}
+				}
+			}
+
+			int currentSegmentIndex = 0;
+			void AddSegment()
+			{
+				if (currentSegmentIndex % 25 == 0 || currentSegmentIndex == 1838)
+					Logger.Info($"Adding segment {currentSegmentIndex}/1838");
+
+				lock (compressRequests)
+				{
+					compressRequests.Push(new SegmentCompressRequest(currentSegment, compressedSegment, currentSegmentIndex++));
+					Monitor.Pulse(compressRequests);
+				}
+
+				currentSegment = null;
+				compressedSegment = null;
+
+				while (true)
+				{
+					lock (segments)
+					{
+						if (segments.Count != 0)
+						{
+							(currentSegment, compressedSegment) = segments.Pop();
+							break;
+						}
+					}
+
+					// Busy wait
+					for (int i = 0; i < 100; i++)
+						;
+				}
+			}
+
+			// Create blob write thread
+			writeThread = new Thread(BlobWriteThread);
+			writeThread.Start();
+
+			// Create segment compress threads
+			for (int i = 0; i < Math.Max(1, Environment.ProcessorCount); i++)
+			{
+				Thread compressThread = new Thread(BlobCompressThread);
+				compressThread.Start();
+				compressThreads.Add(compressThread);
+
+				segments.Push((new(MB), new(MB)));
+				segments.Push((new(MB), new(MB)));
+				segments.Push((new(MB), new(MB)));
+			}
+
+			byte[] decompressedParameterBlob = new byte[MB];
+			byte[] decompressedBlob = new byte[MB];
+			int gcCounter = 0;
+
 			foreach (var asset in gameData.GameBundle.Bundles.SelectMany(b => b.Collections.SelectMany(c => c.Assets.Values)))
 			{
 				if (asset is not IShader shader)
@@ -213,7 +325,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 				ShaderEntry entry = new ShaderEntry();
 				if (!GameData.OriginalGuids.TryGetValue(shader, out string guid))
 				{
-					Logger.Warning($"Skipping {shader.Name}. No GUID.");
+					Logger.Info($"Skipping {shader.Name} (No GUID)");
 					continue;
 				}
 
@@ -362,8 +474,6 @@ namespace AssetRipper.Export.UnityProjects.Project
 						}
 					}
 
-					int gcCounter = 0;
-
 					// Process vertex shaders
 
 					foreach ((var vertexProg, var progParamBlobIndex) in Enumerable.Zip(vertexPrograms, vertexParams)/*.OrderBy(pair => ProgramPlatformIndex((ShaderGpuProgramType)pair.First.GpuProgramType))*/)
@@ -461,7 +571,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 
 						variantMap[(guid, passNum, ProgramPlatformIndex((ShaderGpuProgramType)vertexProg.GpuProgramType))].Add(varEntry);
 
-						if (++gcCounter >= 100)
+						if (++gcCounter >= 500)
 						{
 							GC.Collect();
 							gcCounter = 0;
@@ -565,7 +675,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 
 						variantMap[(guid, passNum, ProgramPlatformIndex((ShaderGpuProgramType)fragmentProg.GpuProgramType))].Add(varEntry);
 
-						if (++gcCounter >= 100)
+						if (++gcCounter >= 500)
 						{
 							GC.Collect();
 							gcCounter = 0;
@@ -579,16 +689,52 @@ namespace AssetRipper.Export.UnityProjects.Project
 					continue;
 
 				entries[guid] = entry;
-				GC.Collect();
+				
+				if (++gcCounter >= 500)
+				{
+					GC.Collect();
+					gcCounter = 0;
+				}
 			}
 
 			if (currentSegment.Length != 0)
 				AddSegment();
 
+			// Join all threads
+
+			Logger.Info("Waiting for threads to finish...");
+
+			while (true)
+			{
+				lock (compressRequests)
+				{
+					if (compressRequests.Count == 0)
+					{
+						terminateCompressThread = true;
+						Monitor.PulseAll(compressRequests);
+						break;
+					}
+				}
+
+				for (int i = 0; i < 100; i++)
+					;
+			}
+
+			foreach (Thread thread in compressThreads)
+				thread.Join();
+
+			lock (writeRequests)
+			{
+				terminateWriteThread = true;
+				Monitor.Pulse(writeRequests);
+			}
+			writeThread.Join();
+
 			// Write table file
 
-			string tablePath = Path.Combine(settings.ProjectRootPath, "table.zip");
+			Logger.Info("Writing table.zip");
 
+			string tablePath = Path.Combine(settings.ProjectRootPath, "table.zip");
 			using (ZipArchive archive = new ZipArchive(File.Open(tablePath, FileMode.OpenOrCreate, FileAccess.Write), ZipArchiveMode.Create))
 			{
 				ShaderTableFile file = new ShaderTableFile(archive);
@@ -640,6 +786,19 @@ namespace AssetRipper.Export.UnityProjects.Project
 				}
 
 				file.RewriteShaderTable();
+			}
+
+			Logger.Info("Finished processing shader blob data!");
+
+			if (currentSegment != null)
+				currentSegment.Dispose();
+			if (compressedSegment != null)
+				compressedSegment.Dispose();
+
+			foreach ((MemoryStream segment, MemoryStream compressed) in segments)
+			{
+				segment.Dispose();
+				compressed.Dispose();
 			}
 
 			GC.Collect();
