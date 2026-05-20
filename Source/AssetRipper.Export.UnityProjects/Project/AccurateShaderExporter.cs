@@ -5,6 +5,7 @@ using AssetRipper.Export.UnityProjects.Configuration;
 using AssetRipper.Export.UnityProjects.Extensions;
 using AssetRipper.Import.Logging;
 using AssetRipper.IO.Files.BundleFiles;
+using AssetRipper.IO.Files.Utils;
 using AssetRipper.Primitives;
 using AssetRipper.Processing;
 using AssetRipper.SourceGenerated.Classes.ClassID_48;
@@ -14,6 +15,7 @@ using AssetsTools.NET;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
 using EasyCompressor;
 using LibCpp2IL;
+using Mono.Unix;
 using RudeShaderMiddleman.Common.BlobTable;
 using RudeShaderMiddleman.Common.Metadata;
 using RudeShaderMiddleman.Common.ShaderTable;
@@ -22,6 +24,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static ICSharpCode.Decompiler.SingleFileBundle;
@@ -53,6 +56,15 @@ namespace AssetRipper.Export.UnityProjects.Project
 		public AccurateShaderExporter(AccurateShaderDefinition definition)
 		{
 			this.definition = definition;
+		}
+
+		private static string GetMD5(string filePath)
+		{
+			MD5 md5 = MD5.Create();
+			using (FileStream fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				return BitConverter.ToString(md5.ComputeHash(fs)).Replace("-", "").ToLowerInvariant();
+			}
 		}
 
 		#region Structures for binary file generation
@@ -89,11 +101,142 @@ namespace AssetRipper.Export.UnityProjects.Project
 		{
 			Logger.Info($"Installing accurate shaders for Unity Editor {definition.Editor}");
 
+			if (!CopyMiddleman())
+			{
+				Logger.Error("Skipping shader processing since copying middleman failed!");
+				return;
+			}
+
 			if (!alreadyExportedBinaries)
 			{
-				MakeBinaries(gameData, settings);
 				alreadyExportedBinaries = true;
+				MakeBinaries(gameData, settings);
 			}
+		}
+
+		public bool CopyMiddleman()
+		{
+			if (!definition.EditorInstalled)
+			{
+				Logger.Error($"Cannot install accurate shaders for Unity {definition.Editor}, because the editor is not installed!");
+				return false;
+			}
+
+			if (!definition.CanModify)
+			{
+				Logger.Error($"Cannot install accurate shaders for Unity {definition.Editor}, because Vanity is not running with elevated privileges!");
+				return false;
+			}
+
+#if OS_LINUX
+			string middlemanPath = "Resources/UnityShaderCompiler";
+#else
+			string middlemanPath = "Resources/UnityShaderCompiler.exe";
+#endif
+
+			if (!File.Exists(middlemanPath))
+			{
+				Logger.Error($"Cannot install accurate shaders for Unity {definition.Editor}, because the file {middlemanPath} does not exist!");
+				return false;
+			}
+
+#if OS_LINUX
+			string alteredPath = Path.Combine(definition.ToolsPath, "_UnityShaderCompiler");
+#else
+			string alteredPath = Path.Combine(definition.ToolsPath, "_UnityShaderCompiler.exe");
+#endif
+
+			if (File.Exists(alteredPath) && GetMD5(alteredPath) == definition.ShaderCompilerMD5)
+			{
+				Logger.Info($"Shader compiler already installed, overwriting");
+
+				try
+				{
+					File.Copy(middlemanPath, definition.ShaderCompilerPath, true);
+				}
+				catch (Exception ex)
+				{
+					Logger.Error(ex);
+					Logger.Error("Attempting to recover the original compiler name...");
+
+					try
+					{
+						if (File.Exists(definition.ShaderCompilerPath))
+							File.Move(definition.ShaderCompilerPath, Path.Combine(definition.ToolsPath, FileUtils.GetUniqueName(definition.ToolsPath, "__UnityShaderCompiler", 32)));
+
+						File.Move(alteredPath, definition.ShaderCompilerPath);
+					}
+					catch (Exception innerEx)
+					{
+						Logger.Error(innerEx);
+						Logger.Error("Cannot recover");
+						return false;
+					}
+
+					return false;
+				}
+
+				return true;
+			}
+
+			if (!File.Exists(definition.ShaderCompilerPath) || GetMD5(definition.ShaderCompilerPath) != definition.ShaderCompilerMD5)
+			{
+				Logger.Error("Could not locate the original shader compiler!");
+				return false;
+			}
+
+			try
+			{
+				File.Move(definition.ShaderCompilerPath, alteredPath);
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+				return false;
+			}
+
+			try
+			{
+				File.Copy(middlemanPath, definition.ShaderCompilerPath, false);
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+
+				if (File.Exists(alteredPath) && GetMD5(alteredPath) == definition.ShaderCompilerMD5)
+				{
+					Logger.Error("Attempting to move back the original file");
+
+					try
+					{
+						File.Move(alteredPath, definition.ShaderCompilerPath, true);
+					}
+					catch (Exception innerEx)
+					{
+						Logger.Error(innerEx);
+						return false;
+					}
+				}
+
+				return false;
+			}
+
+#if OS_LINUX
+			try
+			{
+				var unixFileInfo = new Mono.Unix.UnixFileInfo(definition.ShaderCompilerPath);
+				if (unixFileInfo.Exists)
+				{
+					unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+			}
+#endif
+
+			return true;
 		}
 
 		public void MakeBinaries(GameData gameData, LibraryConfiguration settings)
