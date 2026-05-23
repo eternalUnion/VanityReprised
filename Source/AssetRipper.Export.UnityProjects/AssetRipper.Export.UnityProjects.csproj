@@ -5,6 +5,7 @@
 		<IsTrimmable>true</IsTrimmable>
 		<OutputPath>..\0Bins\Other\AssetRipper.Export.UnityProjects\$(Configuration)\</OutputPath>
 		<IntermediateOutputPath>..\0Bins\obj\AssetRipper.Export.UnityProjects\$(Configuration)\</IntermediateOutputPath>
+		<RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('win')) Or (!$(RuntimeIdentifier.StartsWith('win')) And !$(RuntimeIdentifier.StartsWith('linux')))">
