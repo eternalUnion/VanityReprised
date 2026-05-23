@@ -12,9 +12,14 @@ namespace AssetRipper.Export.UnityProjects.Shaders
 		public const string TemplatesJsonPath = ShaderTemplatePrefix + "Templates.json";
 		public static List<TemplateShader> Templates { get; }
 
+		public const string ShaderCodeTemplatePrefix = "AssetRipper.Export.UnityProjects.Shaders.CodeTemplates.";
+		public const string CodeTemplatesJsonPath = ShaderTemplatePrefix + "Templates.json";
+		public static List<TemplateShader> CodeTemplates { get; }
+
 		static TemplateList()
 		{
 			Templates = LoadTemplates();
+			CodeTemplates = LoadCodeTemplates();
 		}
 
 		public static TemplateShader GetBestTemplate(IShader shader)
@@ -22,16 +27,36 @@ namespace AssetRipper.Export.UnityProjects.Shaders
 			return Templates.Where(tmp => tmp.IsMatch(shader)).MaxBy(matchedTmp => matchedTmp.RequiredProperties.Count)!;
 		}
 
+		public static TemplateShader GetBestCodeTemplate(IShader shader)
+		{
+			return CodeTemplates.Where(tmp => tmp.IsMatch(shader)).MaxBy(matchedTmp => matchedTmp.RequiredProperties.Count)!;
+		}
+
 		private static List<TemplateShader> LoadTemplates()
 		{
 			Logger.Verbose("Loading shader templates");
-			string jsonText = GetTextFromResource(TemplatesJsonPath);
+			string jsonText = GetTextFromResource(CodeTemplatesJsonPath);
 
 			TemplateJson templateJson = JsonSerializer.Deserialize(jsonText, TemplateJsonSerializerContext.Default.TemplateJson)
 				?? throw new Exception("Failed to deserialize json");
 			foreach (TemplateShader template in templateJson.Templates)
 			{
 				string path = ShaderTemplatePrefix + template.TemplateName + ShaderTemplateExtension;
+				template.ShaderText = GetTextFromResource(path);
+			}
+			return templateJson.Templates;
+		}
+
+		private static List<TemplateShader> LoadCodeTemplates()
+		{
+			Logger.Verbose("Loading shader code templates");
+			string jsonText = GetTextFromResource(TemplatesJsonPath);
+
+			TemplateJson templateJson = JsonSerializer.Deserialize(jsonText, TemplateJsonSerializerContext.Default.TemplateJson)
+				?? throw new Exception("Failed to deserialize json");
+			foreach (TemplateShader template in templateJson.Templates)
+			{
+				string path = ShaderCodeTemplatePrefix + template.TemplateName + ShaderTemplateExtension;
 				template.ShaderText = GetTextFromResource(path);
 			}
 			return templateJson.Templates;

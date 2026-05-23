@@ -27,6 +27,11 @@ namespace AssetRipper.AccurateShaders
 			get => AccurateShaders_2022_3_28f1.AlreadyInstalled || AccurateShaders_2022_3_29f1.AlreadyInstalled;
 		}
 
+		public static bool AtLeastOneExporting
+		{
+			get => AccurateShaders_2022_3_28f1.Export || AccurateShaders_2022_3_29f1.Export;
+		}
+
 		public bool Export = false;
 
 		/// <summary>

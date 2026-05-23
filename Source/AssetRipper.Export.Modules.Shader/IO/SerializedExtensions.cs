@@ -1,4 +1,5 @@
-﻿using AssetRipper.Assets.Generics;
+﻿using AssetRipper.AccurateShaders;
+using AssetRipper.Assets.Generics;
 using AssetRipper.Export.Modules.Shaders.Extensions;
 using AssetRipper.Export.Modules.Shaders.ShaderBlob;
 using AssetRipper.Primitives;
@@ -12,8 +13,10 @@ using AssetRipper.SourceGenerated.Subclasses.SerializedProgram;
 using AssetRipper.SourceGenerated.Subclasses.SerializedProperties;
 using AssetRipper.SourceGenerated.Subclasses.SerializedProperty;
 using AssetRipper.SourceGenerated.Subclasses.SerializedShader;
+using AssetRipper.SourceGenerated.Subclasses.SerializedShaderFloatValue;
 using AssetRipper.SourceGenerated.Subclasses.SerializedShaderRTBlendState;
 using AssetRipper.SourceGenerated.Subclasses.SerializedShaderState;
+using AssetRipper.SourceGenerated.Subclasses.SerializedShaderVectorValue;
 using AssetRipper.SourceGenerated.Subclasses.SerializedStencilOp;
 using AssetRipper.SourceGenerated.Subclasses.SerializedSubProgram;
 using AssetRipper.SourceGenerated.Subclasses.SerializedSubShader;
@@ -24,6 +27,16 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 {
 	public static class SerializedExtensions
 	{
+		private static bool HasName(this ISerializedShaderFloatValue _this)
+		{
+			return !_this.Name_R_Utf8String.IsEmpty && _this.Name_R_Utf8String.String != "<noninit>";
+		}
+
+		private static bool HasName(this ISerializedShaderVectorValue _this)
+		{
+			return !_this.Name_R_Utf8String.IsEmpty && _this.Name_R_Utf8String.String != "<noninit>";
+		}
+
 		public static void Export(this ISerializedPass _this, ShaderWriter writer)
 		{
 			writer.WriteIndent(2);
@@ -277,7 +290,15 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 
 		public static void Export(this ISerializedShaderRTBlendState _this, TextWriter writer, int index)
 		{
+			bool modified = false;
+
+			if (_this.SrcBlend.HasName() || _this.SrcBlendAlpha.HasName() || _this.DestBlend.HasName() || _this.DestBlendAlpha.HasName())
+				modified = true;
+
 			if (!_this.SrcBlendValue().IsOne() || !_this.DestBlendValue().IsZero() || !_this.SrcBlendAlphaValue().IsOne() || !_this.DestBlendAlphaValue().IsZero())
+				modified = true;
+
+			if (modified)
 			{
 				writer.WriteIndent(3);
 				writer.Write("Blend ");
@@ -285,15 +306,52 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 				{
 					writer.Write($"{index} ");
 				}
-				writer.Write($"{_this.SrcBlendValue()} {_this.DestBlendValue()}");
-				if (!_this.SrcBlendValue().IsOne() || !_this.DestBlendAlphaValue().IsZero())
+
+				if (_this.SrcBlend.HasName())
 				{
-					writer.Write($", {_this.SrcBlendAlphaValue()} {_this.DestBlendAlphaValue()}");
+					writer.Write($"[{_this.SrcBlend.Name_R_Utf8String.String}] ");
 				}
+				else
+				{
+					writer.Write($"{_this.SrcBlendValue()} ");
+				}
+
+				if (_this.DestBlend.HasName())
+				{
+					writer.Write($"[{_this.DestBlend.Name_R_Utf8String.String}]");
+				}
+				else
+				{
+					writer.Write($"{_this.DestBlendValue()}");
+				}
+
+				if (!_this.SrcBlendAlphaValue().IsOne() || !_this.DestBlendAlphaValue().IsZero() || _this.SrcBlendAlpha.HasName() || _this.DestBlendAlpha.HasName())
+				{
+					writer.Write(", ");
+
+					if (_this.SrcBlendAlpha.HasName())
+					{
+						writer.Write($"[{_this.SrcBlendAlpha.Name_R_Utf8String.String}] ");
+					}
+					else
+					{
+						writer.Write($"{_this.SrcBlendAlphaValue()} ");
+					}
+
+					if (_this.DestBlendAlpha.HasName())
+					{
+						writer.Write($"[{_this.DestBlendAlpha.Name_R_Utf8String.String}]");
+					}
+					else
+					{
+						writer.Write($"{_this.DestBlendAlphaValue()}");
+					}
+				}
+
 				writer.Write('\n');
 			}
 
-			if (!_this.BlendOpValue().IsAdd() || !_this.BlendOpAlphaValue().IsAdd())
+			if (!_this.BlendOpValue().IsAdd() || _this.BlendOp.HasName() || !_this.BlendOpAlphaValue().IsAdd() || _this.BlendOpAlpha.HasName())
 			{
 				writer.WriteIndent(3);
 				writer.Write("BlendOp ");
@@ -301,11 +359,25 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 				{
 					writer.Write($"{index} ");
 				}
-				writer.Write(_this.BlendOpValue().ToString());
-				if (!_this.BlendOpAlphaValue().IsAdd())
+
+				if (_this.BlendOp.HasName())
 				{
-					writer.Write($", {_this.BlendOpAlphaValue()}");
+					writer.Write($"[{_this.BlendOp.Name_R_Utf8String.String}], ");
 				}
+				else
+				{
+					writer.Write($"{_this.BlendOpValue().ToString()}, ");
+				}
+
+				if (_this.BlendOpAlpha.HasName())
+				{
+					writer.Write($"[{_this.BlendOpAlpha.Name_R_Utf8String.String}] ");
+				}
+				else
+				{
+					writer.Write(_this.BlendOpAlphaValue().ToString());
+				}
+
 				writer.Write('\n');
 			}
 
@@ -345,7 +417,7 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 
 		public static void Export(this ISerializedShaderState _this, TextWriter writer)
 		{
-			if (_this.Name != string.Empty)
+			if (_this.Name != string.Empty && !AccurateShaderDefinition.AtLeastOneExporting)
 			{
 				writer.WriteIndent(3);
 				writer.Write($"Name \"{_this.Name}\"\n");
@@ -366,66 +438,145 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 			_this.RtBlend6.Export(writer, 6);
 			_this.RtBlend7.Export(writer, 7);
 
-			if (_this.AlphaToMaskValue())
+			if (_this.AlphaToMaskValue() || _this.AlphaToMask.HasName())
 			{
 				writer.WriteIndent(3);
-				writer.Write("AlphaToMask On\n");
+
+				if (_this.AlphaToMask.HasName())
+				{
+					writer.Write($"AlphaToMask [{_this.AlphaToMask.Name_R_Utf8String.String}]\n");
+				}
+				else
+				{
+					writer.Write("AlphaToMask On\n");
+				}
 			}
 
-			if (!_this.ZClipValue().IsOn())
+			if (!_this.ZClipValue().IsOn() || _this.ZClip.HasName())
 			{
 				writer.WriteIndent(3);
-				writer.Write($"ZClip {_this.ZClipValue()}\n");
+
+				if (_this.ZClip.HasName())
+				{
+					writer.Write($"ZClip [{_this.ZClip.Name_R_Utf8String.String}]\n");
+				}
+				else
+				{
+					writer.Write($"ZClip {_this.ZClipValue()}\n");
+				}
 			}
-			if (!_this.ZTestValue().IsLEqual() && !_this.ZTestValue().IsNone())
+
+			if ((!_this.ZTestValue().IsLEqual() && !_this.ZTestValue().IsNone()) || _this.ZTest.HasName())
 			{
 				writer.WriteIndent(3);
-				writer.Write($"ZTest {_this.ZTestValue()}\n");
+
+				if (_this.ZTest.HasName())
+				{
+					writer.Write($"ZTest [{_this.ZTest.Name_R_Utf8String.String}]\n");
+				}
+				else
+				{
+					writer.Write($"ZTest {_this.ZTestValue()}\n");
+				}
 			}
-			if (!_this.ZWriteValue().IsOn())
+
+			if (!_this.ZWriteValue().IsOn() || _this.ZWrite.HasName())
 			{
 				writer.WriteIndent(3);
-				writer.Write($"ZWrite {_this.ZWriteValue()}\n");
+
+				if (_this.ZWrite.HasName())
+				{
+					writer.Write($"ZWrite [{_this.ZWrite.Name_R_Utf8String.String}]\n");
+				}
+				else
+				{
+					writer.Write($"ZWrite {_this.ZWriteValue()}\n");
+				}
 			}
-			if (!_this.CullingValue().IsBack())
+
+			if (!_this.CullingValue().IsBack() || _this.Culling.HasName())
 			{
 				writer.WriteIndent(3);
-				writer.Write($"Cull {_this.CullingValue()}\n");
+
+				if (_this.Culling.HasName())
+				{
+					writer.Write($"Cull [{_this.Culling.Name_R_Utf8String.String}]\n");
+				}
+				else
+				{
+					writer.Write($"Cull {_this.CullingValue()}\n");
+				}
 			}
+
 			if (!_this.OffsetFactor.IsZero() || !_this.OffsetUnits.IsZero())
 			{
 				writer.WriteIndent(3);
 				writer.Write($"Offset {_this.OffsetFactor.Val}, {_this.OffsetUnits.Val}\n");
 			}
 
+			bool modified = false;
+
 			if (!_this.StencilRef.IsZero() || !_this.StencilReadMask.IsMax() || !_this.StencilWriteMask.IsMax() || !_this.StencilOp.IsDefault() || !_this.StencilOpFront.IsDefault() || !_this.StencilOpBack.IsDefault())
+				modified = true;
+
+			if (_this.StencilRef.HasName() || _this.StencilReadMask.HasName() || _this.StencilWriteMask.HasName()
+				|| _this.StencilOp.Comp.HasName() || _this.StencilOp.Fail.HasName() || _this.StencilOp.Pass.HasName() || _this.StencilOp.ZFail.HasName()
+				|| _this.StencilOpFront.Comp.HasName() || _this.StencilOpFront.Fail.HasName() || _this.StencilOpFront.Pass.HasName() || _this.StencilOpFront.ZFail.HasName()
+				|| _this.StencilOpBack.Comp.HasName() || _this.StencilOpBack.Fail.HasName() || _this.StencilOpBack.Pass.HasName() || _this.StencilOpBack.ZFail.HasName())
+				modified = true;
+
+			if (modified)
 			{
 				writer.WriteIndent(3);
 				writer.Write("Stencil {\n");
-				if (!_this.StencilRef.IsZero())
+				if (!_this.StencilRef.IsZero() || _this.StencilRef.HasName())
 				{
 					writer.WriteIndent(4);
-					writer.Write($"Ref {_this.StencilRef.Val}\n");
+
+					if (_this.StencilRef.HasName())
+					{
+						writer.Write($"Ref [{_this.StencilRef.Name_R_Utf8String.String}]\n");
+					}
+					else
+					{
+						writer.Write($"Ref {_this.StencilRef.Val}\n");
+					}
 				}
-				if (!_this.StencilReadMask.IsMax())
+				if (!_this.StencilReadMask.IsMax() || _this.StencilReadMask.HasName())
 				{
 					writer.WriteIndent(4);
-					writer.Write($"ReadMask {_this.StencilReadMask.Val}\n");
+
+					if (_this.StencilReadMask.HasName())
+					{
+						writer.Write($"ReadMask [{_this.StencilReadMask.Name_R_Utf8String.String}]\n");
+					}
+					else
+					{
+						writer.Write($"ReadMask {_this.StencilReadMask.Val}\n");
+					}
 				}
-				if (!_this.StencilWriteMask.IsMax())
+				if (!_this.StencilWriteMask.IsMax() || _this.StencilWriteMask.HasName())
 				{
 					writer.WriteIndent(4);
-					writer.Write($"WriteMask {_this.StencilWriteMask.Val}\n");
+
+					if (_this.StencilWriteMask.HasName())
+					{
+						writer.Write($"WriteMask [{_this.StencilWriteMask.Name_R_Utf8String.String}]\n");
+					}
+					else
+					{
+						writer.Write($"WriteMask {_this.StencilWriteMask.Val}\n");
+					}
 				}
-				if (!_this.StencilOp.IsDefault())
+				if (!_this.StencilOp.IsDefault() || _this.StencilOp.Comp.HasName() || _this.StencilOp.Fail.HasName() || _this.StencilOp.Pass.HasName() || _this.StencilOp.ZFail.HasName())
 				{
 					_this.StencilOp.Export(writer, StencilType.Base);
 				}
-				if (!_this.StencilOpFront.IsDefault())
+				if (!_this.StencilOpFront.IsDefault() || _this.StencilOpFront.Comp.HasName() || _this.StencilOpFront.Fail.HasName() || _this.StencilOpFront.Pass.HasName() || _this.StencilOpFront.ZFail.HasName())
 				{
 					_this.StencilOpFront.Export(writer, StencilType.Front);
 				}
-				if (!_this.StencilOpBack.IsDefault())
+				if (!_this.StencilOpBack.IsDefault() || _this.StencilOpBack.Comp.HasName() || _this.StencilOpBack.Fail.HasName() || _this.StencilOpBack.Pass.HasName() || _this.StencilOpBack.ZFail.HasName())
 				{
 					_this.StencilOpBack.Export(writer, StencilType.Back);
 				}
@@ -433,29 +584,70 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 				writer.Write("}\n");
 			}
 
+			modified = false;
+
 			if (!_this.FogModeValue().IsUnknown() || !_this.FogColor.IsZero() || !_this.FogDensity.IsZero() || !_this.FogStart.IsZero() || !_this.FogEnd.IsZero())
+				modified = true;
+
+			if ((_this.FogColor.HasName() && _this.FogColor.Name_R_Utf8String.String != "unity_FogColor")
+				|| (_this.FogDensity.HasName() && _this.FogDensity.Name_R_Utf8String.String != "unity_FogDensity")
+				|| (_this.FogStart.HasName() && _this.FogStart.Name_R_Utf8String.String != "unity_FogStart")
+				|| (_this.FogEnd.HasName() && _this.FogEnd.Name_R_Utf8String.String != "unity_FogEnd"))
+				modified = true;
+
+			if (modified)
 			{
 				writer.WriteIndent(3);
 				writer.Write("Fog {\n");
 				if (!_this.FogModeValue().IsUnknown())
 				{
 					writer.WriteIndent(4);
-					writer.Write($"Mode {_this.FogMode}\n");
+					writer.Write($"Mode {_this.FogModeValue()}\n");
 				}
-				if (!_this.FogColor.IsZero())
+				if (!_this.FogColor.IsZero() || (_this.FogColor.HasName() && _this.FogColor.Name_R_Utf8String.String != "unity_FogColor"))
 				{
 					writer.WriteIndent(4);
-					writer.Write($"Color ({_this.FogColor.X.Val.ToStringInvariant()},{_this.FogColor.Y.Val.ToStringInvariant()},{_this.FogColor.Z.Val.ToStringInvariant()},{_this.FogColor.W.Val.ToStringInvariant()})\n");
+					if (_this.FogColor.HasName() && _this.FogColor.Name_R_Utf8String.String != "unity_FogColor")
+					{
+						writer.Write($"Color [{_this.FogColor.Name_R_Utf8String.String}]\n");
+					}
+					else
+					{
+						writer.Write($"Color ({_this.FogColor.X.Val.ToStringInvariant()},{_this.FogColor.Y.Val.ToStringInvariant()},{_this.FogColor.Z.Val.ToStringInvariant()},{_this.FogColor.W.Val.ToStringInvariant()})\n");
+					}
 				}
-				if (!_this.FogDensity.IsZero())
+				if (!_this.FogDensity.IsZero() || (_this.FogDensity.HasName() && _this.FogDensity.Name_R_Utf8String.String != "unity_FogDensity"))
 				{
 					writer.WriteIndent(4);
-					writer.Write($"Density {_this.FogDensity.Val.ToStringInvariant()}\n");
+					if (_this.FogDensity.HasName() && _this.FogDensity.Name_R_Utf8String.String != "unity_FogDensity")
+					{
+						writer.Write($"Density [{_this.FogDensity.Name_R_Utf8String.String}]\n");
+					}
+					else
+					{
+						writer.Write($"Density {_this.FogDensity.Val.ToStringInvariant()}\n");
+					}
 				}
-				if (!_this.FogStart.IsZero() || !_this.FogEnd.IsZero())
+				if (!_this.FogStart.IsZero() || !_this.FogEnd.IsZero() || (_this.FogStart.HasName() && _this.FogStart.Name_R_Utf8String.String != "unity_FogStart") || (_this.FogEnd.HasName() && _this.FogEnd.Name_R_Utf8String.String != "unity_FogEnd"))
 				{
 					writer.WriteIndent(4);
-					writer.Write($"Range {_this.FogStart.Val.ToStringInvariant()}, {_this.FogEnd.Val.ToStringInvariant()}\n");
+					if (_this.FogStart.HasName() && _this.FogStart.Name_R_Utf8String.String != "unity_FogStart")
+					{
+						writer.Write($"Range [{_this.FogStart.Name_R_Utf8String.String}], ");
+					}
+					else
+					{
+						writer.Write($"Range {_this.FogStart.Val.ToStringInvariant()}, ");
+					}
+
+					if (_this.FogEnd.HasName() && _this.FogEnd.Name_R_Utf8String.String != "unity_FogEnd")
+					{
+						writer.Write($"[{_this.FogEnd.Name_R_Utf8String.String}]\n");
+					}
+					else
+					{
+						writer.Write($"{_this.FogEnd.Val.ToStringInvariant()}\n");
+					}
 				}
 				writer.WriteIndent(3);
 				writer.Write("}\n");
@@ -477,18 +669,42 @@ namespace AssetRipper.Export.Modules.Shaders.IO
 			{
 				// When the value is set to 'Disabled', it indicates that this is the default value defined using Properties.
 				// https://github.com/AssetRipper/AssetRipper/pull/1337
-				writer.Write($"Comp{type.ToSuffixString()} [{_this.CompValue()}]\n");
+				writer.Write($"Comp{type.ToSuffixString()} [{_this.Comp.Name_R_Utf8String.String}]\n");
 			}
 			else 
 			{ 
 				writer.Write($"Comp{type.ToSuffixString()} {_this.CompValue()}\n");
 			}
+			
 			writer.WriteIndent(4);
-			writer.Write($"Pass{type.ToSuffixString()} {_this.PassValue()}\n");
+			if (_this.Pass.HasName())
+			{
+				writer.Write($"Pass{type.ToSuffixString()} [{_this.Pass.Name_R_Utf8String.String}]\n");
+			}
+			else
+			{
+				writer.Write($"Pass{type.ToSuffixString()} {_this.PassValue()}\n");
+			}
+
 			writer.WriteIndent(4);
-			writer.Write($"Fail{type.ToSuffixString()} {_this.FailValue()}\n");
+			if (_this.Fail.HasName())
+			{
+				writer.Write($"Fail{type.ToSuffixString()} [{_this.Fail.Name_R_Utf8String.String}]\n");
+			}
+			else
+			{
+				writer.Write($"Fail{type.ToSuffixString()} {_this.FailValue()}\n");
+			}
+			
 			writer.WriteIndent(4);
-			writer.Write($"ZFail{type.ToSuffixString()} {_this.ZFailValue()}\n");
+			if (_this.ZFail.HasName())
+			{
+				writer.Write($"ZFail{type.ToSuffixString()} [{_this.ZFail.Name_R_Utf8String.String}]\n");
+			}
+			else
+			{
+				writer.Write($"ZFail{type.ToSuffixString()} {_this.ZFailValue()}\n");
+			}
 		}
 
 		public static void Export(this ISerializedSubProgram _this, ShaderWriter writer, ShaderType type, bool isTier)

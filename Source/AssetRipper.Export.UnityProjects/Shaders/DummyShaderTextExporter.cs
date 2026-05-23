@@ -1,8 +1,12 @@
-﻿using AssetRipper.Assets;
+﻿using AssetRipper.AccurateShaders;
+using AssetRipper.Assets;
+using AssetRipper.Assets.Generics;
 using AssetRipper.Export.Modules.Shaders.IO;
+using AssetRipper.Processing;
 using AssetRipper.SourceGenerated.Classes.ClassID_48;
 using AssetRipper.SourceGenerated.Extensions;
 using AssetRipper.SourceGenerated.Extensions.Enums.Shader.SerializedShader;
+using AssetRipper.SourceGenerated.Subclasses.SerializedPass;
 using AssetRipper.SourceGenerated.Subclasses.SerializedProperties;
 using AssetRipper.SourceGenerated.Subclasses.SerializedProperty;
 using System.Globalization;
@@ -34,6 +38,44 @@ namespace AssetRipper.Export.UnityProjects.Shaders
 
 			""".Replace("\r", "");
 
+		private static string FallbackDummyShaderCode { get; } = """
+
+			            #pragma vertex vert
+			            #pragma fragment frag
+			            #include "UnityCG.cginc"
+
+			            sampler2D _MainTex;
+
+			            struct appdata
+			            {
+			                float4 vertex : POSITION;
+			                float2 uv : TEXCOORD0;
+			            };
+
+			            struct v2f
+			            {
+			                float4 pos : SV_POSITION;
+			                float2 uv : TEXCOORD0;
+			            };
+
+			            v2f vert (appdata v)
+			            {
+			                v2f o;
+			                o.pos = UnityObjectToClipPos(v.vertex);
+			                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+			                return o;
+			            }
+
+			            fixed4 frag (v2f i) : SV_Target
+			            {
+			                fixed4 col = tex2D(_MainTex, i.uv);
+			                col.a = 1;
+			                return col;
+			            }
+						ENDCG
+
+			""".Replace("\r", "");
+
 		public override bool Export(IExportContainer container, IUnityObjectBase asset, string path)
 		{
 			using FileStream fileStream = File.Create(path);
@@ -46,6 +88,12 @@ namespace AssetRipper.Export.UnityProjects.Shaders
 		{
 			if (shader.Has_ParsedForm())
 			{
+				if (AccurateShaderDefinition.AtLeastOneExporting && GameData.OriginalGuids.ContainsKey(shader))
+				{
+					AccurateShaderExport(shader, writer);
+					return;
+				}
+
 				writer.Write($"Shader \"{shader.ParsedForm.Name}\" {{\n");
 				Export(shader.ParsedForm.PropInfo, writer);
 
@@ -88,6 +136,129 @@ namespace AssetRipper.Export.UnityProjects.Shaders
 			}
 		}
 
+		public static void AccurateShaderExport(IShader shader, TextWriter writer)
+		{
+			writer.Write($"Shader \"{shader.ParsedForm.Name}\" {{\n");
+			Export(shader.ParsedForm.PropInfo, writer);
+			writer.Write("\t\n\t// Dummy shader for accurate shaders\n");
+			writer.Write("\t//\n");
+			writer.Write("\t// If you encounter any problems, delete '<Rude>/Library/ShaderCache' and try opening the project again\n\t\n");
+
+			foreach (var subshader in shader.ParsedForm.SubShaders)
+			{
+				writer.WriteIndent(1);
+				writer.Write("SubShader {\n");
+
+				if (subshader.LOD != 0)
+				{
+					writer.WriteIndent(2);
+					writer.Write("LOD {0}\n", subshader.LOD);
+				}
+
+				if (subshader.Tags.Tags.Count != 0)
+				{
+					writer.WriteIndent(2);
+					writer.Write("Tags { ");
+					foreach (AssetPair<Utf8String, Utf8String> kvp in subshader.Tags.Tags)
+					{
+						writer.Write($"\"{kvp.Key}\" = \"{kvp.Value}\" ");
+					}
+					writer.Write("}\n");
+				}
+
+				for (int i = 0; i < subshader.Passes.Count; i++)
+				{
+					ISerializedPass pass = subshader.Passes[i];
+					writer.WriteIndent(2);
+					writer.Write($"{((SerializedPassType)pass.Type).ToString()} ");
+
+					if (pass.Type == (int)SerializedPassType.UsePass)
+					{
+						writer.Write($"\"{pass.UseName}\"\n");
+					}
+					else
+					{
+						writer.Write("{\n");
+
+						if (pass.Type == (int)SerializedPassType.GrabPass)
+						{
+							if (pass.TextureName.Data.Length > 0)
+							{
+								writer.WriteIndent(3);
+								writer.Write($"\"{pass.TextureName}\"\n");
+							}
+						}
+						else if (pass.Type == (int)SerializedPassType.Pass)
+						{
+							// Commands
+
+							pass.State.Export(writer);
+							writer.Write('\n');
+
+							writer.WriteIndent(3);
+							writer.Write("CGPROGRAM\n\n");
+
+							// Keywords
+
+							var shaderKeywords = pass.ProgVertex.SerializedKeywordStateMask
+								.Concat(pass.ProgFragment.SerializedKeywordStateMask)
+								.Distinct()
+								.Select(idx => shader.ParsedForm.KeywordNames[idx].String)
+								.Except(GameData.GlobalShaderKeywords)
+								.Order();
+
+							writer.WriteIndent(3);
+							writer.Write("// Shader keywords");
+							writer.Write('\n');
+							foreach (string keyword in shaderKeywords)
+							{
+								writer.WriteIndent(3);
+								writer.Write($"#pragma shader_feature {keyword}\n");
+							}
+							writer.Write('\n');
+
+							// Dummy code
+
+							TemplateShader templateShader = TemplateList.GetBestCodeTemplate(shader);
+							if (templateShader != null)
+							{
+								writer.Write(templateShader.ShaderText);
+							}
+							else
+							{
+								writer.Write(FallbackDummyShaderCode);
+							}
+
+							writer.Write('\n');
+						}
+						else
+						{
+							throw new NotSupportedException($"Unsupported pass type {pass.Type}");
+						}
+
+						writer.WriteIndent(2);
+						writer.Write("}\n");
+					}
+				}
+				writer.WriteIndent(1);
+				writer.Write("}\n");
+			}
+
+			if (shader.ParsedForm.FallbackName != string.Empty)
+			{
+				writer.WriteIndent(1);
+				writer.Write($"Fallback \"{shader.ParsedForm.FallbackName}\"\n");
+			}
+			if (shader.ParsedForm.CustomEditorName != string.Empty)
+			{
+				writer.WriteIndent(1);
+				writer.Write($"//CustomEditor \"{shader.ParsedForm.CustomEditorName}\"\n");
+			}
+
+			writer.Write("}\n");
+			writer.Flush();
+		}
+
 		private static void Export(ISerializedProperties _this, TextWriter writer)
 		{
 			writer.WriteIndent(1);
@@ -105,7 +276,10 @@ namespace AssetRipper.Export.UnityProjects.Shaders
 			writer.WriteIndent(2);
 			foreach (Utf8String attribute in _this.Attributes)
 			{
-				writer.Write($"[{attribute}] ");
+				if (attribute.String.StartsWith("Keyword(") && !attribute.String.EndsWith(')'))
+					writer.Write($"[{attribute})] ");
+				else
+					writer.Write($"[{attribute}] ");
 			}
 			SerializedPropertyFlag flags = (SerializedPropertyFlag)_this.Flags;
 			if (flags.IsHideInInspector())
@@ -201,8 +375,11 @@ namespace AssetRipper.Export.UnityProjects.Shaders
 
 				case SerializedPropertyType.Float:
 				case SerializedPropertyType.Range:
-				case SerializedPropertyType.Int:
 					writer.Write(_this.DefValue_0_.ToString(CultureInfo.InvariantCulture));
+					break;
+
+				case SerializedPropertyType.Int:
+					writer.Write(((int)_this.DefValue_0_).ToString(CultureInfo.InvariantCulture));
 					break;
 
 				case SerializedPropertyType.Texture:

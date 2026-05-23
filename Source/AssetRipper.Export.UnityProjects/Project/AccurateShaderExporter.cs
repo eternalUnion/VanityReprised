@@ -261,6 +261,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 			MemoryStream currentSegment = new(MB);
 			MemoryStream compressedSegment = new(MB);
 
+			// There is only one write thread, which receives compressed blobs and writes them to the file
 			bool terminateWriteThread = false;
 			void BlobWriteThread()
 			{
@@ -306,6 +307,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 				}
 			}
 
+			// There are multiple compress threads, since compressing is extremely slow
 			bool terminateCompressThread = false;
 			void BlobCompressThread()
 			{
@@ -339,6 +341,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 				}
 			}
 
+			// This method is used from the main thread to add a blob compress request
 			int currentSegmentIndex = 0;
 			void AddSegment()
 			{
@@ -387,8 +390,10 @@ namespace AssetRipper.Export.UnityProjects.Project
 				segments.Push((new(MB), new(MB)));
 			}
 
+			// Reused buffers to avoid overusing the memory
 			byte[] decompressedParameterBlob = new byte[MB];
 			byte[] decompressedBlob = new byte[MB];
+			// Occasionally run the GC
 			int gcCounter = 0;
 
 			foreach (var asset in gameData.GameBundle.Bundles.SelectMany(b => b.Collections.SelectMany(c => c.Assets.Values)))

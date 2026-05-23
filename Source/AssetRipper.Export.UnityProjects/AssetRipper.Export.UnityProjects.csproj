@@ -39,4 +39,26 @@
 		<Content Remove="C:\Users\**\.nuget\packages\icsharpcode.decompiler\**\Pattern Matching.html" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="Shaders\CodeTemplates\Billboard.txt" />
+	  <None Remove="Shaders\CodeTemplates\Default.txt" />
+	  <None Remove="Shaders\CodeTemplates\ParticlesLit.txt" />
+	  <None Remove="Shaders\CodeTemplates\SingleColor.txt" />
+	  <None Remove="Shaders\CodeTemplates\SingleTexture.txt" />
+	  <None Remove="Shaders\CodeTemplates\Templates.json" />
+	  <None Remove="Shaders\CodeTemplates\TransparentDiffuse.txt" />
+	  <None Remove="Shaders\CodeTemplates\Unlit.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Shaders\CodeTemplates\Billboard.txt" />
+	  <EmbeddedResource Include="Shaders\CodeTemplates\Default.txt" />
+	  <EmbeddedResource Include="Shaders\CodeTemplates\ParticlesLit.txt" />
+	  <EmbeddedResource Include="Shaders\CodeTemplates\SingleColor.txt" />
+	  <EmbeddedResource Include="Shaders\CodeTemplates\SingleTexture.txt" />
+	  <EmbeddedResource Include="Shaders\CodeTemplates\Templates.json" />
+	  <EmbeddedResource Include="Shaders\CodeTemplates\TransparentDiffuse.txt" />
+	  <EmbeddedResource Include="Shaders\CodeTemplates\Unlit.txt" />
+	</ItemGroup>
+
 </Project>
