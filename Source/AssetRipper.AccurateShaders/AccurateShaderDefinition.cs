@@ -92,6 +92,15 @@ namespace AssetRipper.AccurateShaders
 #endif
 
 		/// <summary>
+		/// Path to move the original shader compiler to
+		/// </summary>
+#if OS_LINUX
+		public string AugmentedPath => Path.Combine(EditorPath, "Editor", "Data", "Tools", "_UnityShaderCompiler");
+#else
+		public string AugmentedPath => Path.Combine(EditorPath, "Editor", "Data", "Tools", "_UnityShaderCompiler.exe");
+#endif
+
+		/// <summary>
 		/// Returns true if the Unity Editor is locally installed
 		/// </summary>
 		public bool EditorInstalled => Directory.Exists(EditorPath);

@@ -92,20 +92,30 @@ namespace AssetRipper.Export.UnityProjects.Project
 		{
 			Logger.Info($"Installing accurate shaders for Unity Editor {definition.Editor}");
 
-			if (!CopyMiddleman())
-			{
-				Logger.Error("Skipping shader processing since copying middleman failed!");
-				return;
-			}
+#if OS_LINUX
+			string middlemanPath = "Resources/UnityShaderCompiler";
+#else
+			string middlemanPath = "Resources/UnityShaderCompiler.exe";
+#endif
+
+			bool copyMiddlemanSuccess = CopyMiddleman(middlemanPath);
 
 			if (!alreadyExportedBinaries)
 			{
 				alreadyExportedBinaries = true;
 				MakeBinaries(gameData, settings);
 			}
+
+			if (!copyMiddlemanSuccess)
+			{
+				if (File.Exists(definition.AugmentedPath))
+					Logger.Error($"FAILED to modify '{definition.ShaderCompilerPath}'. Shaders won't appear accurate inside the editor. To fix the issue manually, copy '{Path.GetFullPath(middlemanPath)}' to '{definition.ShaderCompilerPath}'");
+				else
+					Logger.Error($"FAILED to modify '{definition.ShaderCompilerPath}'. Shaders won't appear accurate inside the editor. To fix the issue manually, move '{definition.ShaderCompilerPath}' to '{definition.AugmentedPath}' and copy '{Path.GetFullPath(middlemanPath)}' to '{definition.ShaderCompilerPath}'");
+			}
 		}
 
-		public bool CopyMiddleman()
+		public bool CopyMiddleman(string middlemanPath)
 		{
 			if (!definition.EditorInstalled)
 			{
@@ -118,12 +128,6 @@ namespace AssetRipper.Export.UnityProjects.Project
 				Logger.Error($"Cannot install accurate shaders for Unity {definition.Editor}, because Vanity is not running with elevated privileges!");
 				return false;
 			}
-
-#if OS_LINUX
-			string middlemanPath = "Resources/UnityShaderCompiler";
-#else
-			string middlemanPath = "Resources/UnityShaderCompiler.exe";
-#endif
 
 			if (!File.Exists(middlemanPath))
 			{
@@ -411,7 +415,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 					continue;
 				}
 
-				using var compStream = new MemoryStream(shader.CompressedBlob);
+				using var compStream = new MemoryStream(shader.CompressedBlob, false);
 				(int, int) decompressedParameterBlobCache = (-1, -1);
 				(int, int) decompressedBlobCache = (-1, -1);
 
