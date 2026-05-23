@@ -15,7 +15,6 @@ using AssetsTools.NET;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
 using EasyCompressor;
 using LibCpp2IL;
-using Mono.Unix;
 using RudeShaderMiddleman.Common.BlobTable;
 using RudeShaderMiddleman.Common.Metadata;
 using RudeShaderMiddleman.Common.ShaderTable;
@@ -28,6 +27,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static ICSharpCode.Decompiler.SingleFileBundle;
+#if OS_LINUX
+using Mono.Unix;
+#endif
 
 namespace AssetRipper.Export.UnityProjects.Project
 {

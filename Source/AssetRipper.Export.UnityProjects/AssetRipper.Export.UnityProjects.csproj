@@ -7,10 +7,10 @@
 		<IntermediateOutputPath>..\0Bins\obj\AssetRipper.Export.UnityProjects\$(Configuration)\</IntermediateOutputPath>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+	<PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('win')) Or (!$(RuntimeIdentifier.StartsWith('win')) And !$(RuntimeIdentifier.StartsWith('linux')))">
 		<DefineConstants>OS_WINDOWS</DefineConstants>
 	</PropertyGroup>
-	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+	<PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
 		<DefineConstants>OS_LINUX</DefineConstants>
 	</PropertyGroup>
 
@@ -20,9 +20,12 @@
 		<PackageReference Include="AssetRipper.Tpk" Version="1.0.0" />
 		<PackageReference Include="AssetsTools.NET" Version="3.0.4" />
 		<PackageReference Include="ICSharpCode.Decompiler" Version="8.2.0.7535" />
-		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
+
+  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
+		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\AssetRipper.PackageGuid\AssetRipper.PackageGuid.csproj" />

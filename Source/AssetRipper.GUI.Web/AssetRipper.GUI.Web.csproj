@@ -13,10 +13,10 @@
 	  <None Remove="StaticContent\before2.png" />
 	</ItemGroup>
   
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+  <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('win')) Or (!$(RuntimeIdentifier.StartsWith('win')) And !$(RuntimeIdentifier.StartsWith('linux')))">
     <DefineConstants>OS_WINDOWS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+  <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
     <DefineConstants>OS_LINUX</DefineConstants>
   </PropertyGroup>
 

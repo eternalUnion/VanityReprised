@@ -9,6 +9,7 @@
 		<TrimmerSingleWarn>false</TrimmerSingleWarn>
 		<OutputPath>..\0Bins\AssetRipper.GUI.Free\$(Configuration)\</OutputPath>
 		<IntermediateOutputPath>..\0Bins\obj\AssetRipper.GUI.Free\$(Configuration)\</IntermediateOutputPath>
+    <PublishSingleFile>true</PublishSingleFile>
 	</PropertyGroup>
   
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -31,13 +32,13 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win')) Or (!$(RuntimeIdentifier.StartsWith('win')) And !$(RuntimeIdentifier.StartsWith('linux')))">
     <None Update="Resources\UnityShaderCompiler.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
     <None Update="Resources\UnityShaderCompiler">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
