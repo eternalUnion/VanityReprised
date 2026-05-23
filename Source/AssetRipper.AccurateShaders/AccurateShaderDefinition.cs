@@ -6,8 +6,8 @@ namespace AssetRipper.AccurateShaders
 	public class AccurateShaderDefinition
 	{
 #if OS_LINUX
-		public static AccurateShaderDefinition AccurateShaders_2022_3_28f1 = new("2022.3.28f1", TODO);
-		public static AccurateShaderDefinition AccurateShaders_2022_3_29f1 = new("2022.3.29f1", TODO);
+		public static AccurateShaderDefinition AccurateShaders_2022_3_28f1 = new("2022.3.28f1", "1d66a0e4819e495db32945d2baf18231");
+		public static AccurateShaderDefinition AccurateShaders_2022_3_29f1 = new("2022.3.29f1", "56b0950ea543a19e57f14e41d5d7fe88");
 #else
 		public static AccurateShaderDefinition AccurateShaders_2022_3_28f1 = new("2022.3.28f1", "98de53ed3af19bfd719a667bef648c44");
 		public static AccurateShaderDefinition AccurateShaders_2022_3_29f1 = new("2022.3.29f1", "6e5b57f3a8a025dd0b4055c022f748f8");
@@ -58,12 +58,12 @@ namespace AssetRipper.AccurateShaders
 				string configPath = $"{Editor.Replace('.', '_')}_path.txt";
 				if (File.Exists(configPath))
 				{
-					_editorPath = File.ReadAllText(configPath).Trim();
+					_editorPath = File.ReadAllText(configPath).Replace("${user}", Environment.UserName).Trim();
 				}
 				else
 				{
 #if OS_LINUX
-					throw new Exception("NOT IMPLEMENTED");
+					_editorPath = @$"/home/{Environment.UserName}/Unity/Hub/Editor/{Editor}";
 #else
 					_editorPath = @$"C:\Program Files\Unity\Hub\Editor\{Editor}";
 #endif
@@ -105,6 +105,9 @@ namespace AssetRipper.AccurateShaders
 		{
 			get
 			{
+#if OS_LINUX
+				return true;
+#else
 				if (_triedToModify)
 					return _canModify;
 
@@ -146,6 +149,7 @@ namespace AssetRipper.AccurateShaders
 				}
 
 				return _canModify;
+#endif
 			}
 		}
 

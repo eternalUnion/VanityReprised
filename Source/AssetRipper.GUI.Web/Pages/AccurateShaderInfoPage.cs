@@ -65,7 +65,9 @@ namespace AssetRipper.GUI.Web.Pages
 			{
 				new Li(writer).Close("You must have the Unity Editor already installed. As of now, Rude uses\nUnity Editor 2022.3.28f1 (2022.3.29f1 can be also used).");
 				new Li(writer).Close("All Unity Editor applications must be closed during the process (it is fine for Unity Hub to be running)");
+#if OS_WINDOWS
 				new Li(writer).Close("Vanity Reprised must be run with elevated privileges to modify Unity Editor files");
+#endif
 			}
 
 			/////////////////////////////////////////////////////
@@ -74,7 +76,7 @@ namespace AssetRipper.GUI.Web.Pages
 
 #if OS_LINUX
 			new P(writer).Close("""
-				The only modification to the Unity Editor is renaming "<UnityEditorPath>/Editor/Data/Tools/UnityShaderCompiler"
+				The only modification to the Unity Editor is renaming "/home/${username}/Unity/Hub/Editor/<editor version>/Editor/Data/Tools/UnityShaderCompiler"
 				to "_UnityShaderCompiler", and replacing it with
 				a custom compiler instead. If the editor is not located at this path, you can overwrite the path
 				by modifying the text file located in the same folder as the executable.

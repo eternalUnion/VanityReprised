@@ -187,10 +187,10 @@ public static class WebApplicationLauncher
 #if OS_LINUX
 					try
 					{
-						var unixFileInfo = new Mono.Unix.UnixFileInfo(definition.ShaderCompilerPath);
+						var unixFileInfo = new Mono.Unix.UnixFileInfo(def.ShaderCompilerPath);
 						if (unixFileInfo.Exists)
 						{
-							unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute;
+							unixFileInfo.FileAccessPermissions |= Mono.Unix.FileAccessPermissions.UserExecute;
 						}
 					}
 					catch (Exception ex)
