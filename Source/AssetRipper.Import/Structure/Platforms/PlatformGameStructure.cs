@@ -391,7 +391,6 @@ namespace AssetRipper.Import.Structure.Platforms
 								if (!settings.Export_campaign_scenes_level8_2) continue; break;
 
 							case "campaign_scenes_level8-3":
-							case "other_scenes_all.bundle":
 								if (!settings.Export_campaign_scenes_level8_3) continue; break;
 
 							case "campaign_scenes_level8-4":
@@ -437,6 +436,10 @@ namespace AssetRipper.Import.Structure.Platforms
 
 					// A very special case where Angry Level Loader generates extra bundles for backward compatibility
 					if (rawName.StartsWith("other_assets_") && rawName != "other_assets_all")
+						continue;
+
+					// They forgor
+					if (rawName == "other_scenes_all" && !settings.Export_campaign_scenes_level8_3)
 						continue;
 
 					string name = Path.GetFileNameWithoutExtension(file.Name).ToLowerInvariant();

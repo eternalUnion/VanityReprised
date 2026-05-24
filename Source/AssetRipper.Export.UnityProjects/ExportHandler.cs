@@ -278,6 +278,8 @@ public class ExportHandler
 		}
 
 		tarArchive.Finish();
+		if (Directory.Exists(tempPath))
+			Directory.Delete(tempPath, true);
 
 		Logger.Info(LogCategory.Export, "Finished writing archive");
 

@@ -125,7 +125,7 @@ namespace AssetRipper.Export.UnityProjects
 
 					if (collection is ExportCollection exportCollection)
 					{
-						if (!asset.Collection.IsScene)
+						if (!asset.Collection.IsScene || asset.Collection.Name == "level0")
 						{
 							exportCollection._exportable = false;
 						}
