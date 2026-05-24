@@ -72,6 +72,14 @@ public static class GameFileLoader
 		}
 	}
 
+	public static void ExportUnityPackage(string path)
+	{
+		if (IsLoaded)
+		{
+			ExportHandler.ExportScenesOnly(GameData, path);
+		}
+	}
+
 	public static void ExportPrimaryContent(string path)
 	{
 		if (IsLoaded)

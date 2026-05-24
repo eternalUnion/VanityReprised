@@ -162,6 +162,9 @@ public sealed class IndexPage : DefaultPage
 	{
 		new H1(writer).WithCustomAttribute("align", "left").Close(enabled ? "Scenes To Export" : "Scenes To Export (Cannot edit after import)");
 
+		using (new Div(writer).WithStyle("display: flex; justify-content: flex-start;").End())
+			WritePostLink(writer, "/Export/UnityPackage", "Export selected scenes to unity package", "btn btn-success m-1", enabled: !enabled);
+
 		using (new U(writer).End())
 			new H2(writer).WithCustomAttribute("align", "left").Close("Main Levels");
 

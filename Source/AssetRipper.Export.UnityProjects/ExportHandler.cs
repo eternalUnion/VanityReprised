@@ -17,6 +17,9 @@ using AssetRipper.Processing.Editor;
 using AssetRipper.Processing.PrefabOutlining;
 using AssetRipper.Processing.Scenes;
 using AssetRipper.Processing.Textures;
+using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.Tar;
+using System.Text;
 
 namespace AssetRipper.Export.UnityProjects;
 
@@ -188,6 +191,95 @@ public class ExportHandler
 			postExporter.DoPostExport(gameData, Settings);
 		}
 		Logger.Info(LogCategory.Export, "Finished post-export");
+
+		static string GetListOfVersions(GameBundle gameBundle)
+		{
+			return string.Join(' ', gameBundle
+				.FetchAssetCollections()
+				.Select(c => c.Version)
+				.Distinct()
+				.Select(v => v.ToString()));
+		}
+	}
+
+	public void ExportScenesOnly(GameData gameData, string outputPath)
+	{
+		Logger.Info(LogCategory.Export, "Starting export");
+		Logger.Info(LogCategory.Export, $"Attempting to export unitypackage to {outputPath}...");
+		Logger.Info(LogCategory.Export, $"Game files have these Unity versions:{GetListOfVersions(gameData.GameBundle)}");
+		Logger.Info(LogCategory.Export, $"Exporting to Unity version {gameData.ProjectVersion}");
+
+		string tempPath = Path.GetFullPath("temp");
+		if (Directory.Exists(tempPath))
+			Directory.Delete(tempPath, true);
+		Directory.CreateDirectory(tempPath);
+
+		Settings.ExportRootPath = tempPath;
+		Settings.SetProjectSettings(gameData.ProjectVersion, BuildTarget.NoTarget, TransferInstructionFlags.NoTransferInstructionFlags);
+
+		UnityPackageExporter packageExporter = new UnityPackageExporter(Settings, gameData.AssemblyManager);
+		packageExporter.DoFinalOverrides(Settings);
+		packageExporter.Export(gameData.GameBundle, Settings);
+
+		Logger.Info(LogCategory.Export, "Finished exporting assets, creating archive");
+
+		using var outFileStream = File.OpenWrite(outputPath);
+		using var gzoStream = new GZipOutputStream(outFileStream);
+		gzoStream.FileName = "archtemp.tar";
+		using var tarArchive = new TarOutputStream(gzoStream, Encoding.UTF8);
+
+		Stack<(string absoluteDir, string relativeDir)> directoriesToVisit = new();
+		directoriesToVisit.Push((tempPath, string.Empty));
+		while (directoriesToVisit.Count > 0)
+		{
+			(string currentDir, string relativeDir) = directoriesToVisit.Pop();
+			foreach (string subDir in Directory.GetDirectories(currentDir))
+			{
+				directoriesToVisit.Push((subDir, string.IsNullOrEmpty(relativeDir) ? Path.GetFileName(subDir) : $"{relativeDir}/{Path.GetFileName(subDir)}"));
+			}
+
+			foreach (string metaFilePath in Directory.GetFiles(currentDir).Where(file => file.EndsWith(".meta")))
+			{
+				string assetPath = metaFilePath.Substring(0, metaFilePath.Length - ".meta".Length);
+				if (!File.Exists(assetPath))
+					continue;
+
+				string? guidLine = File.ReadAllLines(metaFilePath).FirstOrDefault(line => line.StartsWith("guid: "));
+				if (guidLine == null)
+					continue;
+
+				string guid = guidLine.Substring("guid: ".Length, guidLine.Length - "guid: ".Length).Trim();
+				if (!Guid.TryParse(guid, out _))
+					continue;
+
+				var assetEntry = TarEntry.CreateEntryFromFile(assetPath);
+				assetEntry.Name = $"{guid}/asset";
+				tarArchive.PutNextEntry(assetEntry);
+				using (FileStream assetStream = File.OpenRead(assetPath))
+					assetStream.CopyTo(tarArchive);
+				tarArchive.CloseEntry();
+
+				var metaEntry = TarEntry.CreateEntryFromFile(metaFilePath);
+				metaEntry.Name = $"{guid}/asset.meta";
+				tarArchive.PutNextEntry(metaEntry);
+				using (FileStream metaFileStream = File.OpenRead(metaFilePath))
+					metaFileStream.CopyTo(tarArchive);
+				tarArchive.CloseEntry();
+
+				string assetRelativePath = (string.IsNullOrEmpty(relativeDir)) ? Path.GetFileName(assetPath) : $"{relativeDir}/{Path.GetFileName(assetPath)}";
+				byte[] bytes = Encoding.UTF8.GetBytes(assetRelativePath);
+				
+				var pathEntry = TarEntry.CreateTarEntry($"{guid}/pathname");
+				pathEntry.Size = bytes.Length;
+				tarArchive.PutNextEntry(pathEntry);
+				tarArchive.Write(bytes, 0, bytes.Length);
+				tarArchive.CloseEntry();
+			}
+		}
+
+		tarArchive.Finish();
+
+		Logger.Info(LogCategory.Export, "Finished writing archive");
 
 		static string GetListOfVersions(GameBundle gameBundle)
 		{

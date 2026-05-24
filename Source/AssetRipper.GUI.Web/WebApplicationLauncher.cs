@@ -120,6 +120,7 @@ public static class WebApplicationLauncher
 		app.MapStaticFile("/css/site.css", "text/css");
 		app.MapStaticFile("/js/site.js", "text/javascript");
 		app.MapStaticFile("/js/commands_page.js", "text/javascript");
+		app.MapStaticFile("/js/commands_package_page.js", "text/javascript");
 		app.MapStaticFile("/before1.png", "image/png");
 		app.MapStaticFile("/after1.png", "image/png");
 		app.MapStaticFile("/before2.png", "image/png");
@@ -214,6 +215,7 @@ public static class WebApplicationLauncher
 			return Uninstall();
 		});
 		app.MapGet("/Commands", CommandsPage.Instance.ToResult);
+		app.MapGet("/CommandsPackage", CommandsPackagePage.Instance.ToResult);
 		app.MapGet("/Privacy", PrivacyPage.Instance.ToResult);
 		app.MapGet("/Licenses", LicensesPage.Instance.ToResult);
 
@@ -276,6 +278,7 @@ public static class WebApplicationLauncher
 
 		//Commands
 		app.MapPost("/Export/UnityProject", Commands.HandleCommand<Commands.ExportUnityProject>);
+		app.MapPost("/Export/UnityPackage", Commands.HandleCommand<Commands.ExportUnityPackage>);
 		app.MapPost("/Export/PrimaryContent", Commands.HandleCommand<Commands.ExportPrimaryContent>);
 		app.MapPost("/LoadFile", Commands.HandleCommand<Commands.LoadFile>);
 		app.MapPost("/LoadFolder", Commands.HandleCommand<Commands.LoadFolder>);

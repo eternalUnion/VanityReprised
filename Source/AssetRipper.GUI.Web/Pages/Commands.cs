@@ -10,6 +10,7 @@ public static class Commands
 {
 	private const string RootPath = "/";
 	private const string CommandsPath = "/Commands";
+	private const string CommandsPackagePath = "/CommandsPackage";
 
 	public readonly struct LoadFile : ICommand
 	{
@@ -47,7 +48,7 @@ public static class Commands
 
 			AccurateShaderDefinition.AccurateShaders_2022_3_28f1.Export = form.ContainsKey(nameof(AccurateShaderDefinition.AccurateShaders_2022_3_28f1));
 			AccurateShaderDefinition.AccurateShaders_2022_3_29f1.Export = form.ContainsKey(nameof(AccurateShaderDefinition.AccurateShaders_2022_3_29f1));
-
+			
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_intermission1 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_intermission1));
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_intermission2 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_intermission2));
 			GameFileLoader.Settings.ImportSettings.Export_campaign_scenes_level0_1 = form.ContainsKey(nameof(ImportSettings.Export_campaign_scenes_level0_1));
@@ -143,6 +144,36 @@ public static class Commands
 			if (!string.IsNullOrEmpty(path))
 			{
 				GameFileLoader.ExportUnityProject(path);
+			}
+			return null;
+		}
+	}
+
+	public readonly struct ExportUnityPackage : ICommand
+	{
+		static async Task<string?> ICommand.Execute(HttpRequest request)
+		{
+			IFormCollection form = await request.ReadFormAsync();
+
+			string? path;
+			if (form.TryGetValue("Path", out StringValues values))
+			{
+				path = values;
+			}
+			else if (Dialogs.Supported)
+			{
+				NativeFileDialogs.Net.NfdStatus status = Dialogs.SaveFile.GetUserInput(out path, defaultName: "scenes.unitypackage");
+				if (status == NativeFileDialogs.Net.NfdStatus.Cancelled)
+					return null;
+			}
+			else
+			{
+				return CommandsPackagePath;
+			}
+
+			if (!string.IsNullOrEmpty(path))
+			{
+				GameFileLoader.ExportUnityPackage(path);
 			}
 			return null;
 		}

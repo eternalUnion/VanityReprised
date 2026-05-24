@@ -391,6 +391,7 @@ namespace AssetRipper.Import.Structure.Platforms
 								if (!settings.Export_campaign_scenes_level8_2) continue; break;
 
 							case "campaign_scenes_level8-3":
+							case "other_scenes_all.bundle":
 								if (!settings.Export_campaign_scenes_level8_3) continue; break;
 
 							case "campaign_scenes_level8-4":

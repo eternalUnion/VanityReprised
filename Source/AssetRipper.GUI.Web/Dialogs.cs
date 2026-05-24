@@ -1,5 +1,6 @@
 ﻿using AssetRipper.Web.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using NativeFileDialogs.Net;
 using System.Runtime.InteropServices;
 
@@ -132,11 +133,15 @@ internal static class Dialogs
 		public static async Task HandleGetRequest(HttpContext context)
 		{
 			context.Response.DisableCaching();
-			string? path = await Task.Run(static () =>
+			string defaultFileName = "Untitled";
+			if (context.Request.Query.TryGetValue("defaultname", out StringValues defaultNameVals) && defaultNameVals.Count == 1)
+				defaultFileName = defaultNameVals[0] ?? "Untitled";
+
+			string? path = await Task.Run(() =>
 			{
 				if (Supported)
 				{
-					GetUserInput(out string? path);
+					GetUserInput(out string? path, defaultName: defaultFileName);
 					return path;
 				}
 				else

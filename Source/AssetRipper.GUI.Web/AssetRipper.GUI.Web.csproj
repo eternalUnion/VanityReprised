@@ -44,6 +44,7 @@
 		<EmbeddedResource Include="StaticContent\after2.png" />
 		<EmbeddedResource Include="StaticContent\before1.png" />
 		<EmbeddedResource Include="StaticContent\before2.png" />
+		<EmbeddedResource Include="StaticContent\js\commands_package_page.js" />
 	</ItemGroup>
 
 	<ItemGroup>
