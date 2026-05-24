@@ -224,6 +224,8 @@ public class ExportHandler
 		Logger.Info(LogCategory.Export, "Finished exporting assets, creating archive");
 
 		using var outFileStream = File.OpenWrite(outputPath);
+		outFileStream.Seek(0, SeekOrigin.Begin);
+		outFileStream.SetLength(0);
 		using var gzoStream = new GZipOutputStream(outFileStream);
 		gzoStream.FileName = "archtemp.tar";
 		using var tarArchive = new TarOutputStream(gzoStream, Encoding.UTF8);
