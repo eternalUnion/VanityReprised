@@ -101,6 +101,8 @@ namespace AssetRipper.Export.UnityProjects.Project
 #endif
 
 			bool copyMiddlemanSuccess = CopyMiddleman(middlemanPath);
+			MakeExecutable(definition.ShaderCompilerPath);
+			MakeExecutable(definition.AugmentedPath);
 
 			if (!alreadyExportedBinaries)
 			{
@@ -115,6 +117,27 @@ namespace AssetRipper.Export.UnityProjects.Project
 				else
 					Logger.Error($"FAILED to modify '{definition.ShaderCompilerPath}'. Shaders won't appear accurate inside the editor. To fix the issue manually, move '{definition.ShaderCompilerPath}' to '{definition.AugmentedPath}' and copy '{Path.GetFullPath(middlemanPath)}' to '{definition.ShaderCompilerPath}'");
 			}
+		}
+
+		private static void MakeExecutable(string path)
+		{
+#if OS_LINUX
+			if (!File.Exists(path))
+				return;
+
+			try
+			{
+				var unixFileInfo = new Mono.Unix.UnixFileInfo(path);
+				if (unixFileInfo.Exists)
+				{
+					unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+			}
+#endif
 		}
 
 		public bool CopyMiddleman(string middlemanPath)
@@ -197,21 +220,6 @@ namespace AssetRipper.Export.UnityProjects.Project
 
 				return false;
 			}
-
-#if OS_LINUX
-			try
-			{
-				var unixFileInfo = new Mono.Unix.UnixFileInfo(definition.ShaderCompilerPath);
-				if (unixFileInfo.Exists)
-				{
-					unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute;
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex);
-			}
-#endif
 
 			return true;
 		}
