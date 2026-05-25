@@ -100,15 +100,15 @@ namespace AssetRipper.Export.UnityProjects.Project
 			string middlemanPath = "Resources/UnityShaderCompiler.exe";
 #endif
 
-			bool copyMiddlemanSuccess = CopyMiddleman(middlemanPath);
-			MakeExecutable(definition.ShaderCompilerPath);
-			MakeExecutable(definition.AugmentedPath);
-
 			if (!alreadyExportedBinaries)
 			{
 				alreadyExportedBinaries = true;
 				MakeBinaries(gameData, settings);
 			}
+
+			bool copyMiddlemanSuccess = CopyMiddleman(middlemanPath);
+			MakeExecutable(definition.ShaderCompilerPath);
+			MakeExecutable(definition.AugmentedPath);
 
 			if (!copyMiddlemanSuccess)
 			{
@@ -122,8 +122,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 		private static void MakeExecutable(string path)
 		{
 #if OS_LINUX
-			if (!File.Exists(path))
-				return;
+			Logger.Info($"Making '{path}' executable");
 
 			try
 			{
@@ -131,6 +130,10 @@ namespace AssetRipper.Export.UnityProjects.Project
 				if (unixFileInfo.Exists)
 				{
 					unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute;
+				}
+				else
+				{
+					Logger.Warning($"Could not make '{path}' executable because the file does not exist!");
 				}
 			}
 			catch (Exception ex)

@@ -177,6 +177,7 @@ public static class WebApplicationLauncher
 					{
 						Logger.Error(ex);
 						Logger.Error("Vanity failed to move the original shader compiler file to its original position!");
+						return;
 					}
 
 #if OS_LINUX
