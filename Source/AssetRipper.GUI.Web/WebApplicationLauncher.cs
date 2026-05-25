@@ -163,13 +163,7 @@ public static class WebApplicationLauncher
 						return;
 					}
 
-#if OS_LINUX
-					string alteredPath = Path.Combine(def.ToolsPath, "_UnityShaderCompiler");
-#else
-					string alteredPath = Path.Combine(def.ToolsPath, "_UnityShaderCompiler.exe");
-#endif
-
-					if (!File.Exists(alteredPath) || AccurateShaderDefinition.GetMD5(alteredPath) != def.ShaderCompilerMD5)
+					if (!File.Exists(def.AugmentedPath) || AccurateShaderDefinition.GetMD5(def.AugmentedPath) != def.ShaderCompilerMD5)
 					{
 						Logger.Error($"Cannot uninstall accurate shaders for Unity {def.Editor}, because Vanity failed to locate the original shader compiler!");
 						return;
@@ -177,7 +171,7 @@ public static class WebApplicationLauncher
 
 					try
 					{
-						File.Move(alteredPath, def.ShaderCompilerPath, true);
+						File.Move(def.AugmentedPath, def.ShaderCompilerPath, true);
 					}
 					catch (Exception ex)
 					{

@@ -137,13 +137,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 				return false;
 			}
 
-#if OS_LINUX
-			string alteredPath = Path.Combine(definition.ToolsPath, "_UnityShaderCompiler");
-#else
-			string alteredPath = Path.Combine(definition.ToolsPath, "_UnityShaderCompiler.exe");
-#endif
-
-			if (File.Exists(alteredPath) && AccurateShaderDefinition.GetMD5(alteredPath) == definition.ShaderCompilerMD5)
+			if (File.Exists(definition.AugmentedPath) && AccurateShaderDefinition.GetMD5(definition.AugmentedPath) == definition.ShaderCompilerMD5)
 			{
 				Logger.Info($"Shader compiler already installed, overwriting");
 
@@ -154,21 +148,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 				catch (Exception ex)
 				{
 					Logger.Error(ex);
-					Logger.Error("Attempting to recover the original compiler name...");
-
-					try
-					{
-						if (File.Exists(definition.ShaderCompilerPath))
-							File.Move(definition.ShaderCompilerPath, Path.Combine(definition.ToolsPath, FileUtils.GetUniqueName(definition.ToolsPath, "__UnityShaderCompiler", 32)));
-
-						File.Move(alteredPath, definition.ShaderCompilerPath);
-					}
-					catch (Exception innerEx)
-					{
-						Logger.Error(innerEx);
-						Logger.Error("Cannot recover");
-						return false;
-					}
+					Logger.Error("Failed to install the middleman, preserving the current version!");
 
 					return false;
 				}
@@ -184,7 +164,7 @@ namespace AssetRipper.Export.UnityProjects.Project
 
 			try
 			{
-				File.Move(definition.ShaderCompilerPath, alteredPath);
+				File.Move(definition.ShaderCompilerPath, definition.AugmentedPath);
 			}
 			catch (Exception ex)
 			{
@@ -200,13 +180,13 @@ namespace AssetRipper.Export.UnityProjects.Project
 			{
 				Logger.Error(ex);
 
-				if (File.Exists(alteredPath) && AccurateShaderDefinition.GetMD5(alteredPath) == definition.ShaderCompilerMD5)
+				if (File.Exists(definition.AugmentedPath) && AccurateShaderDefinition.GetMD5(definition.AugmentedPath) == definition.ShaderCompilerMD5)
 				{
 					Logger.Error("Attempting to move back the original file");
 
 					try
 					{
-						File.Move(alteredPath, definition.ShaderCompilerPath, true);
+						File.Move(definition.AugmentedPath, definition.ShaderCompilerPath, true);
 					}
 					catch (Exception innerEx)
 					{
